@@ -1,0 +1,18 @@
+[0.533s] Invoking command in '/home/alireza/projects/eyerobot-ros2/eyerobot_ws/build/frame': CONDA_PROMPT_MODIFIER=(robot-planner) PYTHONPATH=/home/alireza/projects/eyerobot-ros2/eyerobot_ws/build/frame/prefix_override:/home/alireza/projects/eyerobot-ros2/eyerobot_ws/install/frame/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /home/alireza/projects/eyerobot-ros2/eyerobot_ws/build/frame/build --no-deps install_data
+[0.761s] running develop
+[0.870s] running egg_info
+[0.870s] writing frame.egg-info/PKG-INFO
+[0.870s] writing dependency_links to frame.egg-info/dependency_links.txt
+[0.870s] writing entry points to frame.egg-info/entry_points.txt
+[0.870s] writing requirements to frame.egg-info/requires.txt
+[0.870s] writing top-level names to frame.egg-info/top_level.txt
+[0.894s] reading manifest file 'frame.egg-info/SOURCES.txt'
+[0.894s] writing manifest file 'frame.egg-info/SOURCES.txt'
+[0.918s] running build_ext
+[0.918s] Creating /home/alireza/projects/eyerobot-ros2/eyerobot_ws/install/frame/lib/python3.8/site-packages/frame.egg-link (link to .)
+[0.919s] Installing d445_publisher script to /home/alireza/projects/eyerobot-ros2/eyerobot_ws/install/frame/lib/frame
+[0.919s] 
+[0.919s] Installed /home/alireza/projects/eyerobot-ros2/eyerobot_ws/build/frame
+[0.919s] running install_data
+[0.919s] copying package.xml -> /home/alireza/projects/eyerobot-ros2/eyerobot_ws/install/frame/share/frame
+[0.947s] Invoked command in '/home/alireza/projects/eyerobot-ros2/eyerobot_ws/build/frame' returned '0': CONDA_PROMPT_MODIFIER=(robot-planner) PYTHONPATH=/home/alireza/projects/eyerobot-ros2/eyerobot_ws/build/frame/prefix_override:/home/alireza/projects/eyerobot-ros2/eyerobot_ws/install/frame/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /home/alireza/projects/eyerobot-ros2/eyerobot_ws/build/frame/build --no-deps install_data

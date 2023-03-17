@@ -9,7 +9,12 @@ setup.py
 ../../build/frame/frame.egg-info/top_level.txt
 ../../build/frame/frame.egg-info/zip-safe
 frame/__init__.py
+frame/d445_publisher.py
+frame.egg-info/PKG-INFO
+frame.egg-info/SOURCES.txt
+frame.egg-info/dependency_links.txt
+frame.egg-info/entry_points.txt
+frame.egg-info/requires.txt
+frame.egg-info/top_level.txt
+frame.egg-info/zip-safe
 resource/frame
-test/test_copyright.py
-test/test_flake8.py
-test/test_pep257.py
