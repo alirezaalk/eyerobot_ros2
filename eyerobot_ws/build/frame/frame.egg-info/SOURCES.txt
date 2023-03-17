@@ -1,0 +1,15 @@
+package.xml
+setup.cfg
+setup.py
+../../build/frame/frame.egg-info/PKG-INFO
+../../build/frame/frame.egg-info/SOURCES.txt
+../../build/frame/frame.egg-info/dependency_links.txt
+../../build/frame/frame.egg-info/entry_points.txt
+../../build/frame/frame.egg-info/requires.txt
+../../build/frame/frame.egg-info/top_level.txt
+../../build/frame/frame.egg-info/zip-safe
+frame/__init__.py
+resource/frame
+test/test_copyright.py
+test/test_flake8.py
+test/test_pep257.py
