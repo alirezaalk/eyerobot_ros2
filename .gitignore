@@ -1,0 +1,22 @@
+## bulit files ## 
+/eyerobot_ws/build/
+/eyerobot_ws/build/**/*
+
+# ## static files
+/user_input
+/user_images
+
+## unneccessary files
+*.pyc
+**/package-lock.json
+**/tmp/*
+*.ntf
+**/check-in-device/*.ini
+**/node_modules
+testcode.py
+testcode.ipynb
+*.ini
+*.csv
+*.png
+*.log
+*.yml
