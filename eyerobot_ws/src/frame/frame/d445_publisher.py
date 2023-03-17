@@ -13,7 +13,7 @@ class FrameExtractor(Node):
     def __init__(self):
         super().__init__("d445_publisher")
         self.get_logger().info("d445 frame publisher has been started!")
-        self.frame_pub_ = self.create_publisher(Image, "/d445_publisher", 10)
+        self.frame_pub_ = self.create_publisher(Image, "/d445_images", 10)
         self.image_ = None
         self.bridge_ = CvBridge()
         self.timer_ = self.create_timer(0.1, self.send_frame)
