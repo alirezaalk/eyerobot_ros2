@@ -11,7 +11,9 @@ import rclpy
 from .packages.parse_images import parse_images
 from .packages.splash_screen import SplashScreen
 from .ui_handler import UIHandler
-
+from sensor_msgs.msg import Image
+import cv2
+from .camera_subscriber import D445CameraSubscriber
 
 class UINodeLoader(Node):
     def __init__(self):
@@ -20,16 +22,19 @@ class UINodeLoader(Node):
         self.get_logger().info("Medical Autonomy and Precision Surgery Laboratory - Robot Control UI")
         print("Medical Autonomy and Precision Surgery Laboratory - Robot Control UI")
         self.counter_ = 0
-        self.create_timer(1, self.timer_callback)
+        self.create_timer(1, self.show_ui)
         
         # bring up the ui
         self.app = QtWidgets.QApplication(sys.argv)
         # Build splash screen and UI
         splash_screen = SplashScreen()
+        
         self.ui = UIHandler()
         splash_screen.show()
         self.app.processEvents()
 
+        
+        
         # Display splash screen while UI loads
         splash_screen.finish(self.ui.ui)
 
@@ -44,14 +49,18 @@ class UINodeLoader(Node):
         self.ui.show()
         self.app.exec()
 
-  
-        
+    def start_camera(self):
+        # D455 Camera Subscriber
+        self.cam_subscriber_ = self.create_subscription(Image, "/d445_images", D445CameraSubscriber().update_pixmap, 1)
+
+
+
 # Starts command and control UI
 # Also displays our splash screen
 def main(args=None):
     rclpy.init(args=args)
-    node = UINodeLoader()
-    rclpy.spin(node)
+    ui_node = UINodeLoader()
+    rclpy.spin(ui_node)
     rclpy.shutdown()
 
 

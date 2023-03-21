@@ -24,6 +24,7 @@ class FrameExtractor(Node):
         self.image, color_depth, depth = self.camera_.get_latest_frame(show_image =True)
         if self.image is not None:
             self.frame_pub_.publish(self.bridge_.cv2_to_imgmsg(self.image))
+            print('frame sent')
         
 
 def main(args=None):
