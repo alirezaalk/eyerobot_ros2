@@ -4,6 +4,7 @@ setup.py
 resource/ui
 ui/__init__.py
 ui/camera_subscriber.py
+ui/gui_node.py
 ui/ui_handler.py
 ui/ui_node_loader.py
 ui.egg-info/PKG-INFO
@@ -13,7 +14,9 @@ ui.egg-info/entry_points.txt
 ui.egg-info/requires.txt
 ui.egg-info/top_level.txt
 ui.egg-info/zip-safe
+ui/packages/__init__.py
 ui/packages/canvas.py
+ui/packages/movement.py
 ui/packages/parse_images.py
 ui/packages/splash_screen.py
 ui/packages/start_ui.py

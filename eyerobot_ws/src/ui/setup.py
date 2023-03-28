@@ -21,7 +21,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'ui_node = ui.ui_node_loader:main '
+            'gui_node = ui.gui_node:main '
         ],
     },
 )

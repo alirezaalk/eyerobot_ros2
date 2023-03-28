@@ -10,7 +10,7 @@ import numpy as np
 from PyQt5 import QtWidgets
 import rclpy
 from rclpy.node import Node
-from configs.ui_config import UiConfig
+from ui.configs.ui_config import UiConfig
 from PyQt5 import uic
 from PyQt5 import QtWidgets
 from sensor_msgs.msg import Image
@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import QLabel
 from cv_bridge import CvBridge
 import cv2
 import time
-from packages.splash_screen import SplashScreen
+from ui.packages.splash_screen import SplashScreen
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
             try:
                 # ROS2 init
                 rclpy.init(args=None)
-                self.node = Node('Qt_view_node')
+                self.node = Node('gui_node')
                 self.node.get_logger().info("QT main window node has been started")
                 self.sub = self.node.create_subscription(
                     Image,
@@ -135,7 +135,8 @@ def convert_cv_qt(cv_image: np.ndarray):
 def test_():
     MainWindow()
 
-if __name__ == "__main__":
+
+def main():
     app = QtWidgets.QApplication(sys.argv)
     #app = QApplication(sys.argv)
     win = MainWindow()
@@ -150,3 +151,19 @@ if __name__ == "__main__":
     
     
     sys.exit(app.exec_())
+if __name__ == "__main__":
+    # app = QtWidgets.QApplication(sys.argv)
+    # #app = QApplication(sys.argv)
+    # win = MainWindow()
+    
+    # splash_screen = SplashScreen()
+    # splash_screen.show()
+    # app.processEvents()
+    # # Display splash screen while UI loads
+    # splash_screen.finish(win.ui)
+    # win.show()
+    # # app.exec()
+    
+    
+    # sys.exit(app.exec_())
+    main()
