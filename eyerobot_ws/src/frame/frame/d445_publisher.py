@@ -6,7 +6,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 import sys
 sys.path.append('/home/alireza/projects/eyerobot-ros2/eyerobot_ws/src/frame/frame')
-from realsense.realsense import RealSense_Camera
+from frame.realsense.realsense import RealSense_Camera
 ## TODO 1- fix how to address other packages in other folders/ 2- in order to fix pyrealsense2 module, I commented the conda in .bashrc and install it on the ubuntu which should be fixed and compatible with the conda enviroments.
 
 class FrameExtractor(Node):
@@ -21,9 +21,9 @@ class FrameExtractor(Node):
 
     def send_frame(self):
         # msg = Image()
-        self.image, color_depth, depth = self.camera_.get_latest_frame(show_image =True)
+        self.image, color_depth, depth, combined_image = self.camera_.get_latest_frame(show_image =True)
         if self.image is not None:
-            self.frame_pub_.publish(self.bridge_.cv2_to_imgmsg(self.image))
+            self.frame_pub_.publish(self.bridge_.cv2_to_imgmsg(combined_image))
             print('frame sent')
         
 

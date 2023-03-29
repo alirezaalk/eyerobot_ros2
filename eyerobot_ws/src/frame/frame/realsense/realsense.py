@@ -63,7 +63,7 @@ class RealSense_Camera():
             cv2.imshow('RealSense', images)
             cv2.waitKey(1)
         
-        return color_image, depth_colormap, depth_image
+        return color_image, depth_colormap, depth_image, images
 
     def stop_stream(self):
         # Stop streaming
