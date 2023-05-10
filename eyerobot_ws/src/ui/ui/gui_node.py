@@ -110,9 +110,11 @@ class MainWindow(QMainWindow):
         self.node.get_logger().info("Recieved")
         self.show_frame(self.ui.d445_image, cv_image)
     
+    
+    
     def show_frame(self, target_label: QLabel, image ):
         # # scaling the image while showing in the ui
-        scale_factor = 1
+        scale_factor = 0.5
         target_label.setPixmap(convert_cv_qt(image))
         target_label.setMaximumHeight(image.shape[0] * scale_factor)
         target_label.setMaximumWidth(image.shape[1] * scale_factor)

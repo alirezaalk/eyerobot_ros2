@@ -1,6 +1,6 @@
 ## bulit files ## 
-# /eyerobot_ws/build/
-# /eyerobot_ws/build/**/*
+/eyerobot_ws/build/
+/eyerobot_ws/build/**/*
 
 # ## static files
 /user_input
