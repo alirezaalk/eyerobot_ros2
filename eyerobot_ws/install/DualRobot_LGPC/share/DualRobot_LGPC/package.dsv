@@ -1,0 +1,9 @@
+source;share/DualRobot_LGPC/hook/pythonpath.ps1
+source;share/DualRobot_LGPC/hook/pythonpath.dsv
+source;share/DualRobot_LGPC/hook/pythonpath.sh
+source;share/DualRobot_LGPC/hook/ament_prefix_path.ps1
+source;share/DualRobot_LGPC/hook/ament_prefix_path.dsv
+source;share/DualRobot_LGPC/hook/ament_prefix_path.sh
+source;../../build/DualRobot_LGPC/share/DualRobot_LGPC/hook/pythonpath_develop.ps1
+source;../../build/DualRobot_LGPC/share/DualRobot_LGPC/hook/pythonpath_develop.dsv
+source;../../build/DualRobot_LGPC/share/DualRobot_LGPC/hook/pythonpath_develop.sh
