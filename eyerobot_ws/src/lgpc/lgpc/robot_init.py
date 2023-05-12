@@ -7,14 +7,13 @@ from rclpy.node import Node
 from rclpy.parameter import Parameter
 
 from geometry_msgs.msg import Pose
-
 import lgpc.core.robot.lcm_ros_wrapper as lrw
 import lgpc.core.robot.robot_commands as rc
 
-class CalibMovement(Node):
+class RobotInit(Node):
     def __init__(self):
-        super().__init__("calib_movement")
-        self.get_logger().info("Node is initilized!")
+        super().__init__("robot_init")
+        self.get_logger().info("robot init node is initilized!")
         self.counter = 0 
         self.topic_name = '/encoder_data'
         self.robot_init = [i * 100000 for i in[1,1,1,1,1]]
@@ -24,11 +23,17 @@ class CalibMovement(Node):
     
     def pose_callback(self, pose:Pose):
         robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
+        self.get_logger().info(str(robot_pose))
         
-        signal = rc.z_trans(robot_pose, 10)
+        signal = rc.z_init(robot_pose)
+        
+        # How to kill a node with python
         if signal:
             raise SystemExit
 
+
+
+        
         
 
     
@@ -36,13 +41,13 @@ class CalibMovement(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    node = CalibMovement()
+    node = RobotInit()
     try:
         rclpy.spin(node=node)
-    except:
-        node.destroy_node()
-        rclpy.logging.get_logger("Quitting").info("Movement is Done!")
-        rclpy.shutdown()
+    except SystemExit:
+        rclpy.logging.get_logger("Quitting").info("Done")
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()

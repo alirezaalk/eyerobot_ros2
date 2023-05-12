@@ -32,7 +32,7 @@ def data_subscription(channel, data):
     nonlin_data = msg.nonlinear
     
 
-def data_publisher(mode, speed, robot_cmd):
+def data_publisher(mode,  robot_cmd, speed = 100):
     """
     publishing commands through the lcm
     parameters: 
@@ -45,7 +45,7 @@ def data_publisher(mode, speed, robot_cmd):
     """
     lcm_cm = lcm.LCM()  #  send command 
     robot_cmd = [item * speed for item in robot_cmd] 
-    print(robot_cmd)
+    # print(robot_cmd)
     message.linear = 0
     message.nonlinear = 0
     if mode == "rcm":

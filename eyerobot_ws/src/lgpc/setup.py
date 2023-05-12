@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             "calib_movement = lgpc.calib_movement:main",
-            "encoder_publisher = lgpc.encoder_publisher:main"
+            "encoder_publisher = lgpc.encoder_publisher:main", 
+            "robot_init = lgpc.robot_init:main"
         ],
     },
 )

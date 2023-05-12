@@ -1,5 +1,5 @@
 #! usr/bin/env python3
-import lgpc.lcm_ros_wrapper as lrw
+import lgpc.core.robot.lcm_ros_wrapper as lrw
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Pose
@@ -30,7 +30,7 @@ class EncoderPublisher(Node):
         """
         pose = Pose()
         data,*other = lrw.encoder_data()
-        print(data)
+        #print(data)
         try:
             # z 
             pose.position.x = data[0]
