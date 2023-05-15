@@ -14,7 +14,7 @@ import lgpc.core.robot.robot_commands as rc
 class CalibMovement(Node):
     def __init__(self):
         super().__init__("calib_movement")
-        self.get_logger().info("Node is initilized!")
+        self.get_logger().info("Node is initilized!!")
         self.counter = 0 
         self.topic_name = '/encoder_data'
         self.robot_init = [i * 100000 for i in[1,1,1,1,1]]
@@ -24,8 +24,8 @@ class CalibMovement(Node):
     
     def pose_callback(self, pose:Pose):
         robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
-        
-        signal = rc.z_trans(robot_pose, 10)
+        signal = rc.rcm(robot_pose, -1 , 0)
+        # signal = rc.z_trans(robot_pose, 10)
         if signal:
             raise SystemExit
 

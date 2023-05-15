@@ -50,8 +50,11 @@ def data_publisher(mode,  robot_cmd, speed = 100):
     message.nonlinear = 0
     if mode == "rcm":
         message.control_bits = 132
-        message.nonlinear = [robot_cmd[0], robot_cmd[1], robot_cmd[1], robot_cmd[2], robot_cmd[2]]
-        message.linear = 0
+        message.nonlinear = [robot_cmd[0], robot_cmd[1], robot_cmd[2]]
+        message.linear = [0,0,0]
+        
+        lcm_cm.publish("RobotCommand", message.encode())
+
     if mode == "trn":
         message.control_bits = 130
         message.linear = robot_cmd
