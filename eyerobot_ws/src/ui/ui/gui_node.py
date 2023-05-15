@@ -85,6 +85,8 @@ class MainWindow(QMainWindow):
                         "background-color: rgb(255,0,51);"
                         "border-radius:5px;"
                     )
+                    ## show the sign to stop the subscription
+                    raise SystemExit
                 else:
                     self.ui.label_ros2_state_float.setText("Connected")
                     self.ui.label_ros2_state_float.setStyleSheet(
@@ -92,14 +94,18 @@ class MainWindow(QMainWindow):
                         "background-color: rgb(18,230,95);"
                         "border-radius:5px;"
                     )
-            except:
-                pass
+            except SystemExit:
+                self.node.destroy_node()
+                rclpy.logging.get_logger("Quitting").info("Movement is Done!")
+                rclpy.shutdown()
         else:
             self.node.destroy_node()
             rclpy.shutdown()
 
     def stop_camera_subscription(self):
-        self.sub = None
+        self.node.destroy_node()
+        rclpy.logging.get_logger("Quitting").info("Movement is Done!")
+        rclpy.shutdown()
 
     def update_pixmap(self, image_message: Image):
         #print(image_message)
