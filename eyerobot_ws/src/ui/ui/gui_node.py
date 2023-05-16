@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.d445_topic_name = "/d445_images"
+        
         # init cvbridge to be able subscribing image data from publisher
         self.bridge = CvBridge()
         
@@ -36,9 +37,10 @@ class MainWindow(QMainWindow):
         # self.setWindowIcon(QIcon(self.icon_path))
         
         # Connect UI signals
-        ## Camera Button
+        ## RGBD Camera Button
         self.ui.d445_start_but.clicked.connect(self.start_camera_subscription)
         self.ui.d445_stop_but.clicked.connect(self.stop_camera_subscription)
+        
         ## TODO add arrow button
         ## Arrow buttons
         # self.ui.control_up.mousePressEvent = self.emit_signal_up
@@ -48,10 +50,38 @@ class MainWindow(QMainWindow):
         
     
     
-    # Display contained UI
+    ########################## Display contained UI ##############################
     def show(self):
         self.ui.show()
 
+    # live camera extraction 
+    def update_pixmap(self, image_message: Image):
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="passthrough")
+        except:
+            print("subscription faild")
+        self.node.get_logger().info("Recieved")
+        self.show_frame(self.ui.d445_image, cv_image)
+    
+    ##### 
+    def show_frame(self, target_label: QLabel, image ):
+        # # scaling the image while showing in the ui
+        scale_factor = 0.5
+        target_label.setPixmap(convert_cv_qt(image))
+        target_label.setMaximumHeight(image.shape[0] * scale_factor)
+        target_label.setMaximumWidth(image.shape[1] * scale_factor)
+        QApplication.processEvents()
+        # time.sleep(0.1)
+        if False: 
+            cv2.imshow('frame', image)
+            cv2.waitKey(1)
+
+
+    
+    
+    
+    
+    #################################### Frame Page ########################333
     # Start subscribing the d455
     def start_camera_subscription(self, state):
         log_string = "Camera is running"
@@ -107,39 +137,16 @@ class MainWindow(QMainWindow):
         rclpy.logging.get_logger("Quitting").info("Movement is Done!")
         rclpy.shutdown()
 
-    def update_pixmap(self, image_message: Image):
-        #print(image_message)
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="passthrough")
-        except:
-            print("subscription faild")
-        self.node.get_logger().info("Recieved")
-        self.show_frame(self.ui.d445_image, cv_image)
-    
-    
-    
-    def show_frame(self, target_label: QLabel, image ):
-        # # scaling the image while showing in the ui
-        scale_factor = 0.5
-        target_label.setPixmap(convert_cv_qt(image))
-        target_label.setMaximumHeight(image.shape[0] * scale_factor)
-        target_label.setMaximumWidth(image.shape[1] * scale_factor)
-        QApplication.processEvents()
-        # time.sleep(0.1)
-        if False: 
-            cv2.imshow('frame', image)
-            cv2.waitKey(1)
-
-
-
 
 
 def convert_cv_qt(cv_image: np.ndarray):
-    """Convert from an opencv image to QPixmap"""
-    h, w, ch = cv_image.shape
-    bytes_per_line = ch * w
-    qt_image = QtGui.QImage(cv_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-    return QPixmap.fromImage(qt_image)
+        """Convert from an opencv image to QPixmap"""
+        h, w, ch = cv_image.shape
+        bytes_per_line = ch * w
+        qt_image = QtGui.QImage(cv_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+        return QPixmap.fromImage(qt_image)
+
+
 def test_():
     MainWindow()
 
