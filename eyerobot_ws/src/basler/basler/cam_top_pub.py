@@ -27,15 +27,18 @@ class CamTopPub(Node):
             self.get_logger().info('frame Sent')
 
 def main(args = None):
+    cam = BaslerCamera()
     try:
-        BaslerCamera().stop_camera()
+        cam.stop_camera()
         rclpy.init(args=args)
         node = CamTopPub()
         rclpy.spin(node)
     except KeyboardInterrupt:
-        BaslerCamera().stop_camera()
+        rclpy.logging.get_logger("Quiting").info("Done")
+        node.destroy_node()
         rclpy.shutdown()
-    
+    cam.stop_camera()
+
 
 if __name__ == "__main__":
     main()

@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>MAPS</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icons/logo_black.jpg</normaloff>icons/logo_black.jpg</iconset>
+  </property>
   <property name="accessibleName">
    <string/>
   </property>
@@ -540,6 +544,20 @@
                  </item>
                 </layout>
                </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_4">
+                 <property name="font">
+                  <font>
+                   <family>Ubuntu Condensed</family>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Side Camera</string>
+                 </property>
+                </widget>
+               </item>
                <item row="14" column="0">
                 <spacer name="verticalSpacer_5">
                  <property name="orientation">
@@ -567,6 +585,19 @@
                  </property>
                 </widget>
                </item>
+               <item row="6" column="0">
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
                <item row="9" column="0">
                 <widget class="QLabel" name="camera_image">
                  <property name="maximumSize">
@@ -587,7 +618,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="label_3">
+                <widget class="QLabel" name="camera_top_image">
                  <property name="maximumSize">
                   <size>
                    <width>720</width>
@@ -604,34 +635,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <spacer name="verticalSpacer_6">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_4">
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu Condensed</family>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Side Camera</string>
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>

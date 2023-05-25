@@ -101,9 +101,9 @@ class RealSense_Camera():
                     images = np.hstack((color_image, depth_colormap))
 
                 # Show images
-                cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-                cv2.imshow('RealSense', images)
-                cv2.waitKey(1)
+                # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+                # cv2.imshow('RealSense', images)
+                # cv2.waitKey(1)
 
         finally:
             # Stop streaming

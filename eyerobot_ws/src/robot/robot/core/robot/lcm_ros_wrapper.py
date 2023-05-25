@@ -48,12 +48,6 @@ def data_publisher(mode,  robot_cmd, speed = 100):
     # print(robot_cmd)
     message.linear = 0
     message.nonlinear = 0
-    if mode == 'stop':
-        message.control_bits = 0
-        message.nonlinear = [0,0,0]
-        message.linear = [0,0,0]
-        lcm_cm.publish("RobotCommand", message.encode())
-        print("step message sent to the robot")
     if mode == "rcm":
         message.control_bits = 132
         message.nonlinear = [robot_cmd[0], robot_cmd[1], robot_cmd[2]]

@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'lgpc'
+package_name = 'robot'
 
 setup(
     name=package_name,
@@ -20,9 +20,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "calib_movement = lgpc.calib_movement:main",
-            "robot_encoder = lgpc.robot_encoder:main", 
-            "robot_init = lgpc.robot_init:main"
+            'robot_encoder = robot.robot_encoder:main',
+            'robot_driver  = robot.robot_driver:main',
+            'robot_move_z_tran = robot.robot_move_z_tran: main',
+            'robot_slam_trn = robot.robot_slam_trn : main'
         ],
     },
 )

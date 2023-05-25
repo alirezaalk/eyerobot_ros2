@@ -4,7 +4,7 @@ import numpy as np
 import math
 
 def stop_command():
-    lrw.data_publisher('trn', [0,0,0], 0)           
+    lrw.data_publisher('stop', [0,0,0], 0)           
 
 
 ######################################## TRANSLATIONAL ########################################
@@ -25,7 +25,7 @@ def z_trans(robot_pose, dist=100, robot_init = [100000 * i for i in [1,1,1,1,1]]
     try:
         lrw.data_publisher('trn', [1,0,0], speed = speed)
         print("Command sent")   
-        return True 
+        return False 
             # if abs(robot_pose[0] - robot_target[0]) > stop_acc :
         #     if dist < 0:
         #         speed = -1 * speed

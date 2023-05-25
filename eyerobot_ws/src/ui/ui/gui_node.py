@@ -24,7 +24,12 @@ from ui.packages.splash_screen import SplashScreen
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        self.d445_topic_name = "/d445_images"
+
+         # ROS2 init
+        rclpy.init(args=None)
+        self.node = Node('gui_node')
+        self.node.get_logger().info("QT main window node has been started")
+        # rclpy.spin(self.node)
         
         # init cvbridge to be able subscribing image data from publisher
         self.bridge = CvBridge()
@@ -38,9 +43,15 @@ class MainWindow(QMainWindow):
         
         # Connect UI signals
         ## RGBD Camera Button
+        self.d445_topic_name = "/d445_images"
         self.ui.d445_start_but.clicked.connect(self.start_camera_subscription)
         self.ui.d445_stop_but.clicked.connect(self.stop_camera_subscription)
         
+        # Basler Camera Top 
+        self.cam_top_topic_name = "/cam_top"
+        self.ui.start_camera_top.clicked.connect(self.cam_top_start_sub)
+
+
         ## TODO add arrow button
         ## Arrow buttons
         # self.ui.control_up.mousePressEvent = self.emit_signal_up
@@ -54,14 +65,7 @@ class MainWindow(QMainWindow):
     def show(self):
         self.ui.show()
 
-    # live camera extraction 
-    def update_pixmap(self, image_message: Image):
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="passthrough")
-        except:
-            print("subscription faild")
-        self.node.get_logger().info("Recieved")
-        self.show_frame(self.ui.d445_image, cv_image)
+    
     
     ##### 
     def show_frame(self, target_label: QLabel, image ):
@@ -80,7 +84,26 @@ class MainWindow(QMainWindow):
     
     
     
-    
+    #################################### Main Page ###########################
+    # live camera extraction 
+    def update_pixmap_cam_top(self, image_message: Image):
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="passthrough")
+        except:
+            print("subscription faild")
+        self.node.get_logger().info("Recieved")
+
+        self.show_frame(self.ui.camera_top_image, cv_image)
+    def cam_top_start_sub(self, state):
+        log_string = "Microscope Camera is running"
+        self.ui.log_console.append(log_string)
+        print("cam top clicked")
+        self.cam_top_sub = self.node.create_subscription(
+            Image,
+            self.cam_top_topic_name,
+            self.update_pixmap_cam_top,
+            1 )
+        rclpy.spin(self.node)
     #################################### Frame Page ########################333
     # Start subscribing the d455
     def start_camera_subscription(self, state):
@@ -88,20 +111,21 @@ class MainWindow(QMainWindow):
         self.ui.log_console.append(log_string)
         if (True):
             try:
-                # ROS2 init
-                rclpy.init(args=None)
-                self.node = Node('gui_node')
-                self.node.get_logger().info("QT main window node has been started")
+                # # ROS2 init
+                # rclpy.init(args=None)
+                # self.node = Node('gui_node')
+                # self.node.get_logger().info("QT main window node has been started")
                 self.sub = self.node.create_subscription(
                     Image,
                     self.d445_topic_name,
-                    self.update_pixmap,
+                    self.update_pixmap_realsense,
                     1,
                 )
+
                 # spin once, timeout_sec 5[s]
                 timeout_sec_rclpy = 5
                 timeout_init = time.time()
-                rclpy.spin(self.node)
+                # rclpy.spin(self.node)
                 #rclpy.spin_once(self.node, timeout_sec=timeout_sec_rclpy)
                 timeout_end = time.time()
                 ros_connect_time = timeout_end - timeout_init
@@ -137,6 +161,15 @@ class MainWindow(QMainWindow):
         rclpy.logging.get_logger("Quitting").info("Movement is Done!")
         rclpy.shutdown()
 
+    # live camera extraction 
+    def update_pixmap_realsense(self, image_message: Image):
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="passthrough")
+        except:
+            print("subscription faild")
+        self.node.get_logger().info("Recieved")
+
+        self.show_frame(self.ui.d445_image, cv_image)
 
 
 def convert_cv_qt(cv_image: np.ndarray):

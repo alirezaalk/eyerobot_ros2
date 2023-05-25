@@ -8,6 +8,7 @@ class BaslerCamera:
     def __init__(self):
         
         self.latest_frame = None
+        #print(pylon.InstantCamera(pylon.TlFactory.EnumerateDevices()))
         self.camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateFirstDevice())
         self.camera.Close()
         self.start_camera()
@@ -37,11 +38,16 @@ class BaslerCamera:
             # pylon_image = self.image_converter.Convert(camera_result)
             if self.latest_frame.GrabSucceeded():
                 image = self.image_converter.Convert(self.latest_frame)
-                print("SizeX: ", self.latest_frame.Width)
+                # print("SizeX: ", self.latest_frame.Width)
                 # print("SizeY: ", self.latest_frame.Height)
                 self.img = image.GetArray()
+                self.width = 1400  
+                self.height = 600
+                dsize = (self.width, self.height)
+                # resize image
+                self.scaled_img = cv2.resize(self.img, dsize)
             #cv_image = image.GetArray()
-            return self.img
+            return self.scaled_img
         except genicam.GenericException as e : 
                 # self.stop_camera()
                 print ("genicam error")
