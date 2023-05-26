@@ -7,8 +7,8 @@ from rclpy.node import Node
 from rclpy.parameter import Parameter
 
 from geometry_msgs.msg import Pose
-import robot.core.robot.lcm_ros_wrapper as lrw
-import robot.core.robot.robot_commands as rc
+import robot.com.lcm_ros_wrapper as lrw
+import robot.com.robot_commands as rc
 
 class RobotMovementZTRN(Node):
     def __init__(self):

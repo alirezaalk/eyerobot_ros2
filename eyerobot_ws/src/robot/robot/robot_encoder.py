@@ -1,5 +1,5 @@
 #! usr/bin/env python3
-import robot.core.robot.lcm_ros_wrapper as lrw
+import robot.com.lcm_ros_wrapper as lrw
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Pose

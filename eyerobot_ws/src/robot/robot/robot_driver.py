@@ -8,8 +8,9 @@ from rclpy.parameter import Parameter
 
 from geometry_msgs.msg import Pose
 
-import robot.core.robot.lcm_ros_wrapper as lrw
-import robot.core.robot.robot_commands as rc
+import robot.com.lcm_ros_wrapper as lrw
+import robot.com.robot_commands as rc
+import time
 
 class RobotDriver(Node):
     def __init__(self):
@@ -24,13 +25,32 @@ class RobotDriver(Node):
     
     def pose_callback(self, pose:Pose):
         robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
-        self.get_logger().info(str(robot_pose))
+        # self.get_logger().info(str(robot_pose))
         ### pose.oriention.z is the flag for mode
         
         mode = pose.orientation.z
         if pose.orientation.z == 130.0:
-            signal = rc.z_trans(robot_pose, dist = 100, speed = 29)
+            signal = rc.z_trans(robot_pose, direction = 1, dist = 100, speed = 29)
+            rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(str(pose))
+        if pose.orientation.z == -130.0:
+            signal = rc.z_trans(robot_pose, direction = -1, dist = 100, speed = 19)
+            rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(str(pose))
+        
+        if pose.orientation.z == 130.1:
+            signal = rc.y_trans(robot_pose, direction = 1, dist = 100, speed = 29)
+            rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(str(pose))
+        if pose.orientation.z == -130.1:
+            signal = rc.x_trans(robot_pose, direction = -1, dist = 100, speed = 19)
+            rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(str(pose))
+        
+        if pose.orientation.z == 130.2:
+            signal = rc.x_trans(robot_pose, direction = 1, dist = 100, speed = 29)
+            rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(str(pose))
+        if pose.orientation.z == -130.2:
+            signal = rc.x_trans(robot_pose, direction = -1, dist = 100, speed = 19)
+            rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(str(pose))
         if pose.orientation.z == 0.0:
+            # time.sleep(10)
             rc.stop_command()
         # # How to kill a node with python
         # if signal:
