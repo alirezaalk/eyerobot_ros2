@@ -39,6 +39,7 @@ class RobotSLAMTrn(Node):
         robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
         #### actuator 0
         if self.axis == 'z':
+            self.target = robot_pose + (self.target)
             if robot_pose[0] < self.target:
                 pose.orientation.z = 130.0
                 self.cmd_pub.publish(pose)
@@ -86,7 +87,7 @@ class RobotSLAMTrn(Node):
                 raise SystemExit
  
         
-def main(target = 140000, axis = 'x' ,args=None):
+def main(target = 140000, axis = 'y' ,args=None):
     rclpy.init(args=args)
 
     node = RobotSLAMTrn(target = target , axis= axis)

@@ -17,22 +17,19 @@ def z_trans(robot_pose, direction = 1, dist=100, robot_init = [100000 * i for i 
     stop accuarcy : is the difference to the target 
     stop_acc / 10 = real_accuacy in um
     speed = 100 means 1 mm per second
+    retrun bool
+    false = the movement is not done
+    true = the movement is done
     """ 
-    
-    pose_target = dist * 1000
-    robot_target = [i + pose_target for i in robot_init]
-    #robot_target = robot_init[0] + pose_target
     try:
         if direction == 1 : 
             lrw.data_publisher('trn', [1,0,0], speed = speed)
         if direction == -1 :
-            lrw.data_publisher('trn', [-1,0,0], speed = speed)
-            print("back")
-        print("Command sent")   
+            lrw.data_publisher('trn', [-1,0,0], speed = speed)  
         return False 
     except KeyboardInterrupt:
         stop_command()
-        return False
+        return True
 
 def y_trans(robot_pose, direction = 1, dist=100, robot_init = [100000 * i for i in [1,1,1,1,1]], stop_acc = 500, speed = 10):
     """
@@ -43,22 +40,19 @@ def y_trans(robot_pose, direction = 1, dist=100, robot_init = [100000 * i for i 
     stop accuarcy : is the difference to the target 
     stop_acc / 10 = real_accuacy in um
     speed = 100 means 1 mm per second
+    retrun bool
+    false = the movement is not done
+    true = the movement is done
     """ 
-    
-    pose_target = dist * 1000
-    robot_target = [i + pose_target for i in robot_init]
-    #robot_target = robot_init[0] + pose_target
     try:
         if direction == 1 : 
             lrw.data_publisher('trn', [0,1,0], speed = speed)
         if direction == -1 :
             lrw.data_publisher('trn', [0,-1,0], speed = speed)
-            print("back")
-        print("Command sent")   
         return False 
     except KeyboardInterrupt:
         stop_command()
-        return False
+        return True
 
 
 def x_trans(robot_pose, direction = 1, dist=100, robot_init = [100000 * i for i in [1,1,1,1,1]], stop_acc = 500, speed = 10):
@@ -70,11 +64,10 @@ def x_trans(robot_pose, direction = 1, dist=100, robot_init = [100000 * i for i 
     stop accuarcy : is the difference to the target 
     stop_acc / 10 = real_accuacy in um
     speed = 100 means 1 mm per second
+    retrun bool
+    false = the movement is not done
+    true = the movement is done
     """ 
-    
-    pose_target = dist * 1000
-    robot_target = [i + pose_target for i in robot_init]
-    #robot_target = robot_init[0] + pose_target
     try:
         if direction == 1 : 
             lrw.data_publisher('trn', [0,0,1], speed = speed)
@@ -84,7 +77,7 @@ def x_trans(robot_pose, direction = 1, dist=100, robot_init = [100000 * i for i 
         return False 
     except KeyboardInterrupt:
         stop_command()
-        return False
+        return True
 
 
 

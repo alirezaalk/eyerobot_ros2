@@ -20,12 +20,14 @@ from cv_bridge import CvBridge
 import cv2
 import time
 from ui.packages.splash_screen import SplashScreen
+from geometry_msgs.msg import Pose
+from std_msgs.msg import Float32
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
 
-         # ROS2 init
+        # ROS2 init
         rclpy.init(args=None)
         self.node = Node('gui_node')
         self.node.get_logger().info("QT main window node has been started")
@@ -51,7 +53,13 @@ class MainWindow(QMainWindow):
         self.cam_top_topic_name = "/cam_top"
         self.ui.start_camera_top.clicked.connect(self.cam_top_start_sub)
 
-
+        ## Monitor the data
+        self.encoder_sub = self.node.create_subscription(
+            Float32,
+            '/move_status',
+            self.log_encoder,
+            10)
+        self.ui.sensor_data_but.clicked.connect(self.monitor_encoders)
         ## TODO add arrow button
         ## Arrow buttons
         # self.ui.control_up.mousePressEvent = self.emit_signal_up
@@ -85,17 +93,35 @@ class MainWindow(QMainWindow):
     
     
     #################################### Main Page ###########################
+    
+
+    def monitor_encoders(self):
+        print("monitor data started")
+        self.encoder_sub = self.node.create_subscription(
+            Pose,
+            '/encoder_data',
+            self.log_encoder,
+            10)
+        # rclpy.spin(self.node)
+
+    def log_encoder(self, pose:Float32):
+        print("hi")
+        # robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
+        # robot_pose = f"{str(robot_pose)}\n"
+        # print(robot_pose)
+        self.ui.log_console.append("i\n")  
     # live camera extraction 
     def update_pixmap_cam_top(self, image_message: Image):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="passthrough")
         except:
             print("subscription faild")
-        self.node.get_logger().info("Recieved")
+        # self.node.get_logger().info("Recieved")
 
         self.show_frame(self.ui.camera_top_image, cv_image)
     def cam_top_start_sub(self, state):
-        log_string = "Microscope Camera is running"
+        log_string = "Microscope Camera is running\n"
+        # self.ui.log_console.append("Medical Autonomy and Precision Surgery Laboratory - Robot Control UI\n")
         self.ui.log_console.append(log_string)
         print("cam top clicked")
         self.cam_top_sub = self.node.create_subscription(

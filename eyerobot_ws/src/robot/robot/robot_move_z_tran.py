@@ -26,7 +26,6 @@ class RobotMovementZTRN(Node):
     def pose_callback(self, pose:Pose):
         robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
         pose.orientation.z = 130.0
-        self.counter_ += 1
         self.get_logger().info(str(robot_pose))
         self.cmd_pub.publish(pose)
         if self.counter_ == 1:
