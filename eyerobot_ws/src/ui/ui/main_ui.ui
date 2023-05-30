@@ -10,6 +10,12 @@
     <height>1080</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="maximumSize">
    <size>
     <width>1920</width>
@@ -440,206 +446,21 @@
              <string notr="true">background-color: rgb(3, 152, 158);</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_3">
-             <item row="1" column="7">
-              <layout class="QGridLayout" name="camera_layout">
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                 <property name="topMargin">
-                  <number>10</number>
-                 </property>
-                 <item>
-                  <widget class="QPushButton" name="start_camera_top">
-                   <property name="font">
-                    <font>
-                     <family>Ubuntu Condensed</family>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Microscope_Camera On </string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_14">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Minimum</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_8">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>icons/stop-camera-icon.png</normaloff>icons/stop-camera-icon.png</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="11" column="0">
-                <layout class="QGridLayout" name="gridLayout_10">
-                 <property name="topMargin">
-                  <number>20</number>
-                 </property>
-                 <item row="1" column="1">
-                  <spacer name="horizontalSpacer_15">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Minimum</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QPushButton" name="start_camera_button">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Ubuntu Condensed</family>
-                     <pointsize>11</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Side_Camera_On</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QPushButton" name="stop_camera">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>icons/stop-camera-icon.png</normaloff>icons/stop-camera-icon.png</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_4">
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu Condensed</family>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Side Camera</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="14" column="0">
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="Mic_top_label">
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu Condensed</family>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Micorscope Camera</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <spacer name="verticalSpacer_6">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="camera_image">
-                 <property name="maximumSize">
-                  <size>
-                   <width>720</width>
-                   <height>360</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="pixmap">
-                  <pixmap>icons/camera_icon.png</pixmap>
-                 </property>
-                 <property name="scaledContents">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="camera_top_image">
-                 <property name="maximumSize">
-                  <size>
-                   <width>720</width>
-                   <height>360</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="pixmap">
-                  <pixmap>icons/camera_icon.png</pixmap>
-                 </property>
-                 <property name="scaledContents">
-                  <bool>true</bool>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+             <item row="1" column="6">
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item row="1" column="3" colspan="2">
               <layout class="QVBoxLayout" name="verticalLayout">
@@ -909,91 +730,7 @@
                  </property>
                 </spacer>
                </item>
-               <item>
-                <widget class="QTextBrowser" name="log_console">
-                 <property name="minimumSize">
-                  <size>
-                   <width>512</width>
-                   <height>128</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(15, 100, 100);</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
-             </item>
-             <item row="4" column="1">
-              <spacer name="verticalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="1" column="6">
-              <spacer name="horizontalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="0" column="1">
-              <spacer name="verticalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="1" column="2">
-              <spacer name="horizontalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="4" column="7">
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
              </item>
              <item row="1" column="8">
               <spacer name="horizontalSpacer_2">
@@ -1011,14 +748,58 @@
                </property>
               </spacer>
              </item>
-             <item row="1" column="1">
-              <layout class="QGridLayout" name="left_layout">
-               <item row="0" column="0">
-                <layout class="QGridLayout" name="control_layout">
-                 <item row="2" column="4">
-                  <spacer name="horizontalSpacer_6">
+             <item row="1" column="0">
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="2">
+              <spacer name="horizontalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="7">
+              <layout class="QGridLayout" name="camera_layout">
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <property name="topMargin">
+                  <number>10</number>
+                 </property>
+                 <item>
+                  <widget class="QPushButton" name="start_camera_top">
+                   <property name="font">
+                    <font>
+                     <family>Ubuntu Condensed</family>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Microscope_Camera On </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_14">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Minimum</enum>
                    </property>
                    <property name="sizeHint" stdset="0">
                     <size>
@@ -1028,21 +809,246 @@
                    </property>
                   </spacer>
                  </item>
-                 <item row="0" column="2">
-                  <spacer name="verticalSpacer_7">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_8">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>icons/stop-camera-icon.png</normaloff>icons/stop-camera-icon.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="11" column="0">
+                <layout class="QGridLayout" name="gridLayout_10">
+                 <property name="topMargin">
+                  <number>20</number>
+                 </property>
+                 <item row="1" column="1">
+                  <spacer name="horizontalSpacer_15">
                    <property name="orientation">
-                    <enum>Qt::Vertical</enum>
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Minimum</enum>
                    </property>
                    <property name="sizeHint" stdset="0">
                     <size>
-                     <width>20</width>
-                     <height>40</height>
+                     <width>40</width>
+                     <height>20</height>
                     </size>
                    </property>
                   </spacer>
                  </item>
-                 <item row="2" column="3">
-                  <widget class="QLabel" name="control_right">
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="start_camera_button">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Ubuntu Condensed</family>
+                     <pointsize>11</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Side_Camera_On</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QPushButton" name="stop_camera">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>icons/stop-camera-icon.png</normaloff>icons/stop-camera-icon.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_4">
+                 <property name="font">
+                  <font>
+                   <family>Ubuntu Condensed</family>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Side Camera</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="Mic_top_label">
+                 <property name="font">
+                  <font>
+                   <family>Ubuntu Condensed</family>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Micorscope Camera</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="camera_image">
+                 <property name="maximumSize">
+                  <size>
+                   <width>720</width>
+                   <height>360</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap>icons/camera_icon.png</pixmap>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="camera_top_image">
+                 <property name="maximumSize">
+                  <size>
+                   <width>720</width>
+                   <height>360</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap>icons/camera_icon.png</pixmap>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="4" column="7">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="3" column="1">
+              <spacer name="verticalSpacer_19">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="0" column="7">
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="0" column="1">
+              <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="4" column="1">
+              <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="1">
+              <layout class="QGridLayout" name="left_layout">
+               <item row="0" column="0">
+                <layout class="QGridLayout" name="control_layout">
+                 <item row="2" column="1">
+                  <widget class="QLabel" name="control_left">
                    <property name="maximumSize">
                     <size>
                      <width>128</width>
@@ -1053,7 +1059,26 @@
                     <string/>
                    </property>
                    <property name="pixmap">
-                    <pixmap>icons/move_right.png</pixmap>
+                    <pixmap>icons/move_left.png</pixmap>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="control_up">
+                   <property name="maximumSize">
+                    <size>
+                     <width>128</width>
+                     <height>128</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>icons/move_up.png</pixmap>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
@@ -1079,21 +1104,21 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="2">
-                  <spacer name="verticalSpacer_8">
+                 <item row="2" column="4">
+                  <spacer name="horizontalSpacer_6">
                    <property name="orientation">
-                    <enum>Qt::Vertical</enum>
+                    <enum>Qt::Horizontal</enum>
                    </property>
                    <property name="sizeHint" stdset="0">
                     <size>
-                     <width>20</width>
-                     <height>40</height>
+                     <width>40</width>
+                     <height>20</height>
                     </size>
                    </property>
                   </spacer>
                  </item>
-                 <item row="2" column="1">
-                  <widget class="QLabel" name="control_left">
+                 <item row="2" column="3">
+                  <widget class="QLabel" name="control_right">
                    <property name="maximumSize">
                     <size>
                      <width>128</width>
@@ -1104,12 +1129,28 @@
                     <string/>
                    </property>
                    <property name="pixmap">
-                    <pixmap>icons/move_left.png</pixmap>
+                    <pixmap>icons/move_right.png</pixmap>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
                    </property>
                   </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <spacer name="verticalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Minimum</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                  <item row="2" column="0">
                   <spacer name="horizontalSpacer_7">
@@ -1124,54 +1165,110 @@
                    </property>
                   </spacer>
                  </item>
-                 <item row="1" column="2">
-                  <widget class="QLabel" name="control_up">
-                   <property name="maximumSize">
+                 <item row="0" column="2">
+                  <spacer name="verticalSpacer_7">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Fixed</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
                     <size>
-                     <width>128</width>
-                     <height>128</height>
+                     <width>20</width>
+                     <height>40</height>
                     </size>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="pixmap">
-                    <pixmap>icons/move_up.png</pixmap>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
+                  </spacer>
+                 </item>
+                 <item row="5" column="0" colspan="5">
+                  <layout class="QVBoxLayout" name="verticalLayout_2">
+                   <item>
+                    <widget class="QLabel" name="label_log">
+                     <property name="text">
+                      <string>Status</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QTextBrowser" name="log_console">
+                     <property name="minimumSize">
+                      <size>
+                       <width>512</width>
+                       <height>128</height>
+                      </size>
+                     </property>
+                     <property name="cursor" stdset="0">
+                      <cursorShape>ForbiddenCursor</cursorShape>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">background-color: rgb(15, 100, 100);</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_encoder_log">
+                     <property name="text">
+                      <string>Encoder Data</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QTextBrowser" name="log_encoder">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>550</width>
+                       <height>2</height>
+                      </size>
+                     </property>
+                     <property name="cursor" stdset="0">
+                      <cursorShape>ForbiddenCursor</cursorShape>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">background-color: rgb(15, 100, 100);
+font: 75 16pt &quot;Ubuntu Condensed&quot;;
+
+</string>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Sunken</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="clear_log_but">
+                     <property name="text">
+                      <string>Clear Encoder Log</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_20">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>180</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </item>
               </layout>
-             </item>
-             <item row="0" column="7">
-              <spacer name="verticalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="1" column="0">
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </widget>

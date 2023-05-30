@@ -17,8 +17,10 @@ class RobotEncoder(Node):
         super().__init__("robot_encoder")
         self.get_logger().info("Encoder data is publishing")
         self.topic_name = '/encoder_data'
+        self.topic_gui = '/encoder_gui'
         self.frequency = 100
         self.encoder_pub = self.create_publisher(Pose, self.topic_name, 10)
+        self.encoder_gui_pub = self.create_publisher(Pose, self.topic_gui,10)
         self.timer = self.create_timer((1/self.frequency), self.encoders_data)
 
 
@@ -44,7 +46,8 @@ class RobotEncoder(Node):
                 f"Z:{pose.position.x} - Y: {pose.position.y}/{pose.position.z} - X:{pose.orientation.x}/{pose.orientation.y}"
                 )
             # publish a data to the topic
-            self.encoder_pub.publish(pose)   
+            self.encoder_pub.publish(pose) 
+            self.encoder_gui_pub.publish(pose)  
         except : 
             self.get_logger().error("Check all connection!") 
 

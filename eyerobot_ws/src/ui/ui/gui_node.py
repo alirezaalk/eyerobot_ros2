@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         # self.setWindowIcon(QIcon(self.icon_path))
         
         # Connect UI signals
+
         ## RGBD Camera Button
         self.d445_topic_name = "/d445_images"
         self.ui.d445_start_but.clicked.connect(self.start_camera_subscription)
@@ -54,12 +55,17 @@ class MainWindow(QMainWindow):
         self.ui.start_camera_top.clicked.connect(self.cam_top_start_sub)
 
         ## Monitor the data
+        self.pose_sub_topic= '/encoder_gui'
+        self.encoder_sub = self.node.create_subscription(Pose,
+            self.pose_sub_topic,
+            self.encoder_gui,
+            10)
         self.encoder_sub = self.node.create_subscription(
-            Float32,
+            Pose,
             '/move_status',
             self.log_encoder,
             10)
-        self.ui.sensor_data_but.clicked.connect(self.monitor_encoders)
+        self.ui.clear_log_but.clicked.connect(self.clear_encoder_log)
         ## TODO add arrow button
         ## Arrow buttons
         # self.ui.control_up.mousePressEvent = self.emit_signal_up
@@ -93,23 +99,28 @@ class MainWindow(QMainWindow):
     
     
     #################################### Main Page ###########################
-    
+    def clear_encoder_log(self):
+        self.ui.log_encoder.clear()
 
+    def encoder_gui(self, pose:Pose):
+        self.ui.log_encoder.clear()
+        robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
+        self.ui.log_encoder.append(f"{str(robot_pose)}")
+    
     def monitor_encoders(self):
         print("monitor data started")
         self.encoder_sub = self.node.create_subscription(
             Pose,
             '/encoder_data',
-            self.log_encoder,
-            10)
-        # rclpy.spin(self.node)
+            self.encoder_gui,
+            1)
 
-    def log_encoder(self, pose:Float32):
+    def log_encoder(self, pose:Pose):
         print("hi")
-        # robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
+        robot_pose = pose.orientation.z # [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
         # robot_pose = f"{str(robot_pose)}\n"
-        # print(robot_pose)
-        self.ui.log_console.append("i\n")  
+        print(robot_pose)
+        self.ui.log_console.append(f"{str(robot_pose)}")  
     # live camera extraction 
     def update_pixmap_cam_top(self, image_message: Image):
         try:
