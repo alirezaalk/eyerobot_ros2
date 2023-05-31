@@ -23,7 +23,9 @@ setup(
             'robot_encoder = robot.robot_encoder:main',
             'robot_driver  = robot.robot_driver:main',
             'robot_move_z_tran = robot.robot_move_z_tran: main',
-            'robot_slam_trn = robot.robot_slam_trn : main'
+            'robot_slam_trn = robot.robot_slam_trn : main',
+            'robot_slam_rcm = robot.robot_slam_rcm : main',
+
         ],
     },
 )
