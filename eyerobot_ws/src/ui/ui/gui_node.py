@@ -23,7 +23,7 @@ from ui.packages.splash_screen import SplashScreen
 from robot_interface.msg import RobotPose
 from std_msgs.msg import UInt16
 import robot.composed as rcomp
-
+from robot_interface.srv import RobotInit
 ### Robot init import
 import robot.excutor as re
 
@@ -74,10 +74,10 @@ class MainWindow(QMainWindow):
         
         ### Robot command button 
         self.ui.robot_init_but.clicked.connect(self.robot_init)
-        self.robot_init_pub = self.node.create_publisher(
-                UInt16, 
-                "/robot_init", 
-                10)
+        self.robot_init_client = self.node.create_client(
+                RobotInit, 
+                "robot_init")
+        self.req = RobotInit.Request()
         ## TODO add arrow button
         ## Arrow buttons
         # self.ui.control_up.mousePressEvent = self.emit_signal_up
@@ -112,18 +112,22 @@ class MainWindow(QMainWindow):
     
     #################################### Main Page ###########################
     def robot_init(self):
+        while not self.robot_init_client.wait_for_service(timeout_sec = 1.0):
+            self.node.get_logger().error("Serive is not available!")
         self.ui.log_console.append("robot is initlizing")
-        msg = UInt16()
-        msg.data= 100
-        self.robot_init_pub.publish(msg)
-        # rcomp.main()
-        signal = True
-        if signal:
-            self.ui.log_console.clear()
-            self.ui.log_console.append("initilizing is Done")
-        if not signal:
-            self.ui.log_console.clear()
-            self.ui.log_console.append("something is wrong")
+        self.req.command = 100
+        self.future = self.robot_init_client.call_async(self.req)
+        print(self.future)
+        # msg.data= 100
+        # self.robot_init_pub.publish(msg)
+        # # rcomp.main()
+        # signal = True
+        # if signal:
+        #     self.ui.log_console.clear()
+        #     self.ui.log_console.append("initilizing is Done")
+        # if not signal:
+        #     self.ui.log_console.clear()
+        #     self.ui.log_console.append("something is wrong")
     
     def clear_encoder_log(self):
         self.ui.log_encoder.clear()

@@ -16,14 +16,16 @@ def robot_init(default_init_pose=[100000,100000,100000], order_axis = ['z', 'x',
         - false : there is an error
 
     """
-    # for i in order_axis:
-        # try:
-        #     print(i)
-        #     tran.main(default_init_pose[(order_axis.index(i))], i)
-        #     return True
-        # except RuntimeError:
-        #     print("some thing is wrong!")
-        #     return False
-    tran.main(120000, 'z')
+    for i in order_axis:
+        try:
+            print(i)
+            tran.main(default_init_pose[(order_axis.index(i))],speed=30, axis=i)
+            print(default_init_pose[(order_axis.index(i))])
+            
+        except RuntimeError:
+            print("some thing is wrong!")
+            return False
+    return True
+    # tran.main(120000, speed = 30, axis='z')
 if __name__ == '__main__':
     robot_init()

@@ -110,8 +110,8 @@ class RobotSLAMTrn(Node):
 
 
 
-def main(target = 107000, speed = 19,  axis = 'z' ,args=None):
-    rclpy.init(args=args)
+def main(target = 107000, speed = 1,  axis = 'z' ,args=None):
+    # rclpy.init(args=args)
     # print(str(sys.argv[1]))
     node = RobotSLAMTrn(target = target , speed= speed, axis= axis)
     try:

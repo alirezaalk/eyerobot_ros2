@@ -25,6 +25,7 @@ setup(
             'robot_move_z_tran = robot.robot_move_z_tran: main',
             'robot_slam_trn = robot.robot_slam_trn : main',
             'robot_slam_rcm = robot.robot_slam_rcm : main',
+            'robot_service = robot.robot_services:main'
 
         ],
     },
