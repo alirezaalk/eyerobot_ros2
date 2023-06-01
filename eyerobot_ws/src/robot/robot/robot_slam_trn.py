@@ -10,12 +10,13 @@ from geometry_msgs.msg import Pose
 from std_msgs.msg import Float32
 import robot.com.lcm_ros_wrapper as lrw
 import robot.com.robot_commands as rc
-
+import sys
 class RobotSLAMTrn(Node):
-    def __init__(self , target, axis, stop_limit = 100):#, target):
+    def __init__(self , target, axis, speed= 25, stop_limit = 100):#, target):
         super().__init__("robot_slam_trn")
         self.get_logger().info("robot_slam_trn node is initilized!")
         self.counter = 0 
+        
         self.pose_sub_topic= '/encoder_data'
         self.cmd_pub_topic = '/cmd_vel'
         self.driver_pub_topic = '/move_status'
@@ -27,6 +28,7 @@ class RobotSLAMTrn(Node):
         self.target = target
         self.axis = axis
         self.stop_limit_ = 100
+        self.robot_speed = speed
         # self.timer_callback()
     
     def pose_callback(self, pose:Pose):
@@ -90,6 +92,7 @@ class RobotSLAMTrn(Node):
                 self.cmd_pub.publish(pose)
                 rclpy.logging.get_logger("move backward").info(str(robot_pose))
             if abs(robot_pose[3] - self.target) < self.stop_limit_ and abs(robot_pose[4] - self.target) < self.stop_limit_:
+                self.move_status_pub.publish(pose)
                 pose.orientation.z =  0.0
                 rclpy.logging.get_logger("STOP").info(str(robot_pose))
                 self.cmd_pub.publish(pose)
@@ -100,9 +103,9 @@ class RobotSLAMTrn(Node):
 
 
 
-def main(target = 167000, axis = 'z' ,args=None):
+def main(target = 107000, axis = 'z' ,args=None):
     rclpy.init(args=args)
-
+    # print(str(sys.argv[1]))
     node = RobotSLAMTrn(target = target , axis= axis)
     try:
         rclpy.spin(node=node)

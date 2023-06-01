@@ -1,0 +1,6 @@
+msg/RobotPose.idl
+msg/RobotPose.msg
+srv/RobotInit.idl
+srv/RobotInit.srv
+srv/RobotInit_Request.msg
+srv/RobotInit_Response.msg

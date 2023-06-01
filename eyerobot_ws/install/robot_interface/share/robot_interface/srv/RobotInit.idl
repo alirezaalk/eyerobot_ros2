@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from robot_interface/srv/RobotInit.srv
+// generated code does not contain a copyright notice
+
+
+module robot_interface {
+  module srv {
+    struct RobotInit_Request {
+      int16 command;
+    };
+    struct RobotInit_Response {
+      boolean sucess;
+    };
+  };
+};

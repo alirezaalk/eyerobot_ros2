@@ -1245,6 +1245,40 @@ font: 75 16pt &quot;Ubuntu Condensed&quot;;
                     </widget>
                    </item>
                    <item>
+                    <widget class="QTableWidget" name="table_encoder">
+                     <row>
+                      <property name="text">
+                       <string>value</string>
+                      </property>
+                     </row>
+                     <column>
+                      <property name="text">
+                       <string>act0</string>
+                      </property>
+                     </column>
+                     <column>
+                      <property name="text">
+                       <string>act 1</string>
+                      </property>
+                     </column>
+                     <column>
+                      <property name="text">
+                       <string>act 2</string>
+                      </property>
+                     </column>
+                     <column>
+                      <property name="text">
+                       <string>act 3</string>
+                      </property>
+                     </column>
+                     <column>
+                      <property name="text">
+                       <string>act 4</string>
+                      </property>
+                     </column>
+                    </widget>
+                   </item>
+                   <item>
                     <widget class="QPushButton" name="clear_log_but">
                      <property name="text">
                       <string>Clear Encoder Log</string>

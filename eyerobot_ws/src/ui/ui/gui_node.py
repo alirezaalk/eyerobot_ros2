@@ -21,7 +21,11 @@ import cv2
 import time
 from ui.packages.splash_screen import SplashScreen
 from geometry_msgs.msg import Pose
-from std_msgs.msg import Float32
+from std_msgs.msg import UInt16
+import robot.composed as rcomp
+
+### Robot init import
+import robot.excutor as re
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -66,6 +70,13 @@ class MainWindow(QMainWindow):
             self.log_encoder,
             10)
         self.ui.clear_log_but.clicked.connect(self.clear_encoder_log)
+        
+        ### Robot command button 
+        self.ui.robot_init_but.clicked.connect(self.robot_init)
+        self.robot_init_pub = self.node.create_publisher(
+                UInt16, 
+                "/robot_init", 
+                10)
         ## TODO add arrow button
         ## Arrow buttons
         # self.ui.control_up.mousePressEvent = self.emit_signal_up
@@ -99,6 +110,20 @@ class MainWindow(QMainWindow):
     
     
     #################################### Main Page ###########################
+    def robot_init(self):
+        self.ui.log_console.append("robot is initlizing")
+        msg = UInt16()
+        msg.data= 100
+        self.robot_init_pub.publish(msg)
+        # rcomp.main()
+        signal = True
+        if signal:
+            self.ui.log_console.clear()
+            self.ui.log_console.append("initilizing is Done")
+        if not signal:
+            self.ui.log_console.clear()
+            self.ui.log_console.append("something is wrong")
+    
     def clear_encoder_log(self):
         self.ui.log_encoder.clear()
 
@@ -116,10 +141,12 @@ class MainWindow(QMainWindow):
             1)
 
     def log_encoder(self, pose:Pose):
-        print("hi")
+        
         robot_pose = pose.orientation.z # [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
         # robot_pose = f"{str(robot_pose)}\n"
         print(robot_pose)
+        self.ui.log_console.clear()
+        self.ui.table_encoder.append(f'{str(robot_pose)}')
         self.ui.log_console.append(f"{str(robot_pose)}")  
     # live camera extraction 
     def update_pixmap_cam_top(self, image_message: Image):
