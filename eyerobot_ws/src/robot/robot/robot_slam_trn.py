@@ -7,6 +7,7 @@ from rclpy.node import Node
 from rclpy.parameter import Parameter
 
 from geometry_msgs.msg import Pose
+from robot_interface.msg import RobotPose
 from std_msgs.msg import Float32
 import robot.com.lcm_ros_wrapper as lrw
 import robot.com.robot_commands as rc
@@ -21,9 +22,13 @@ class RobotSLAMTrn(Node):
         self.cmd_pub_topic = '/cmd_vel'
         self.driver_pub_topic = '/move_status'
         self.robot_init = [i * 100000 for i in[1,1,1,1,1]]
-        self.cmd_pub = self.create_publisher(Pose, self.cmd_pub_topic, 10)
-        self.pose_sub = self.create_subscription(Pose, self.pose_sub_topic, self.pose_callback, 10)
-        self.move_status_pub = self.create_publisher(Pose, self.driver_pub_topic, 10)
+        # self.cmd_pub = self.create_publisher(Pose, self.cmd_pub_topic, 10)
+        # self.pose_sub = self.create_subscription(Pose, self.pose_sub_topic, self.pose_callback, 10)
+        # self.move_status_pub = self.create_publisher(Pose, self.driver_pub_topic, 10)
+        self.cmd_pub = self.create_publisher(RobotPose, self.cmd_pub_topic, 10)
+        self.pose_sub = self.create_subscription(RobotPose, self.pose_sub_topic, self.pose_callback, 10)
+        self.move_status_pub = self.create_publisher(RobotPose, self.driver_pub_topic, 10)
+
         self.counter_ = 0
         self.target = target
         self.axis = axis
@@ -42,22 +47,24 @@ class RobotSLAMTrn(Node):
         +- 132.X >> RCM
         0.0 >> Stop
         """
-        robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
+        robot_pose = [pose.en0, pose.en1, pose.en2, pose.en3, pose.en4]
+        pose.speed = self.robot_speed
+        pose.name = self.axis
         #### actuator 0
         if self.axis == 'z':
             #self.target = robot_pose[0] + self.target
             if robot_pose[0] < self.target:
-                pose.orientation.z = 130.0
+                pose.mode = 130.0
                 self.cmd_pub.publish(pose)
                 rclpy.logging.get_logger("move Forward").info(str(robot_pose))
             if robot_pose[0] > self.target:
-                pose.orientation.z = -130.0
+                pose.mode = -130.0
                 self.cmd_pub.publish(pose)
                 rclpy.logging.get_logger("move backward").info(str(robot_pose))
             if abs(robot_pose[0] - self.target) < self.stop_limit_ :
                 # data.data = pose.orientation.z
                 self.move_status_pub.publish(pose)
-                pose.orientation.z =  0.0
+                pose.mode =  0.0
                 rclpy.logging.get_logger("STOP").info(str(robot_pose))
                 self.cmd_pub.publish(pose)
                 raise SystemExit
@@ -65,17 +72,17 @@ class RobotSLAMTrn(Node):
         #### actuator 1 / 2
         if self.axis == 'y':
             if robot_pose[1] < self.target and robot_pose[2] < self.target:
-                pose.orientation.z = -130.1
+                pose.mode = -130.1
                 self.cmd_pub.publish(pose)
                 rclpy.logging.get_logger("move Forward").info(str(robot_pose))
             if robot_pose[1] > self.target and robot_pose[2] > self.target:
-                pose.orientation.z = 130.1
+                pose.mode = 130.1
                 self.cmd_pub.publish(pose)
                 rclpy.logging.get_logger("move backward").info(str(robot_pose))
             if abs(robot_pose[1] - self.target) < self.stop_limit_ and abs(robot_pose[2] - self.target) < self.stop_limit_:
                 data.data = pose.orientation.z
                 self.move_status_pub.publish(pose)
-                pose.orientation.z =  0.0
+                pose.mode =  0.0
                 rclpy.logging.get_logger("STOP").info(str(robot_pose))
                 self.cmd_pub.publish(pose)
                 
@@ -84,16 +91,16 @@ class RobotSLAMTrn(Node):
          #### actuator 3 / 4
         if self.axis == 'x':
             if robot_pose[3] < self.target and robot_pose[4] < self.target:
-                pose.orientation.z = -130.2
+                pose.mode = -130.2
                 self.cmd_pub.publish(pose)
                 rclpy.logging.get_logger("move Forward").info(str(robot_pose))
             if robot_pose[3] > self.target and robot_pose[4] > self.target:
-                pose.orientation.z = 130.2
+                pose.mode = 130.2
                 self.cmd_pub.publish(pose)
                 rclpy.logging.get_logger("move backward").info(str(robot_pose))
             if abs(robot_pose[3] - self.target) < self.stop_limit_ and abs(robot_pose[4] - self.target) < self.stop_limit_:
                 self.move_status_pub.publish(pose)
-                pose.orientation.z =  0.0
+                pose.mode =  0.0
                 rclpy.logging.get_logger("STOP").info(str(robot_pose))
                 self.cmd_pub.publish(pose)
                 raise SystemExit
@@ -103,10 +110,10 @@ class RobotSLAMTrn(Node):
 
 
 
-def main(target = 107000, axis = 'z' ,args=None):
+def main(target = 107000, speed = 19,  axis = 'z' ,args=None):
     rclpy.init(args=args)
     # print(str(sys.argv[1]))
-    node = RobotSLAMTrn(target = target , axis= axis)
+    node = RobotSLAMTrn(target = target , speed= speed, axis= axis)
     try:
         rclpy.spin(node=node)
         pass

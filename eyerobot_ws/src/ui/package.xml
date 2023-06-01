@@ -9,7 +9,7 @@
 
   <depend>rclpy</depend>
   <depend>packages</depend>
-
+  <depend>robot_interface</depend>
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>

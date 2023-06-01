@@ -20,7 +20,7 @@ from cv_bridge import CvBridge
 import cv2
 import time
 from ui.packages.splash_screen import SplashScreen
-from geometry_msgs.msg import Pose
+from robot_interface.msg import RobotPose
 from std_msgs.msg import UInt16
 import robot.composed as rcomp
 
@@ -60,12 +60,13 @@ class MainWindow(QMainWindow):
 
         ## Monitor the data
         self.pose_sub_topic= '/encoder_gui'
-        self.encoder_sub = self.node.create_subscription(Pose,
+        self.encoder_sub = self.node.create_subscription(
+            RobotPose,
             self.pose_sub_topic,
             self.encoder_gui,
             10)
         self.encoder_sub = self.node.create_subscription(
-            Pose,
+            RobotPose,
             '/move_status',
             self.log_encoder,
             10)
@@ -127,26 +128,28 @@ class MainWindow(QMainWindow):
     def clear_encoder_log(self):
         self.ui.log_encoder.clear()
 
-    def encoder_gui(self, pose:Pose):
+    def encoder_gui(self, pose:RobotPose):
         self.ui.log_encoder.clear()
-        robot_pose = [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
-        self.ui.log_encoder.append(f"{str(robot_pose)}")
+        robot_pose = [pose.en0, pose.en1, pose.en2, pose.en3, pose.en4]
+        speed = pose.speed
+        name = pose.name
+        self.ui.log_encoder.append(f"{str(robot_pose)} \n {str(speed)}")
     
     def monitor_encoders(self):
         print("monitor data started")
         self.encoder_sub = self.node.create_subscription(
-            Pose,
+            RobotPose,
             '/encoder_data',
             self.encoder_gui,
             1)
 
-    def log_encoder(self, pose:Pose):
+    def log_encoder(self, pose:RobotPose):
         
-        robot_pose = pose.orientation.z # [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
+        robot_pose = pose.mode#  # [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
         # robot_pose = f"{str(robot_pose)}\n"
         print(robot_pose)
         self.ui.log_console.clear()
-        self.ui.table_encoder.append(f'{str(robot_pose)}')
+        # self.ui.table_encoder.append(f'{str(robot_pose)}')
         self.ui.log_console.append(f"{str(robot_pose)}")  
     # live camera extraction 
     def update_pixmap_cam_top(self, image_message: Image):
