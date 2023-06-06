@@ -14,7 +14,7 @@ import robot.com.lcm_ros_wrapper as lrw
 import robot.com.robot_commands as rc
 import time
 import robot.excutor as re
-import robot.composed as rcomp
+#import robot.robot_excutor as rcomp
 from robot_interface.msg import RobotPose
 
 class RobotDriver(Node):
@@ -33,10 +33,10 @@ class RobotDriver(Node):
         move_status_msg = Float32()
         robot_pose = [pose.en0, pose.en1, pose.en2, pose.en3, pose.en4]
         speed = pose.speed
-        mode = pose.mode
+        mode = round(pose.mode,1)
         command = pose.command
         name = pose.name
-        print(mode)
+        print(round(pose.mode,1))
         # self.get_logger().info(str(robot_pose))
         ### pose.oriention.z is the flag for mode
         signal = False
@@ -44,80 +44,80 @@ class RobotDriver(Node):
         
         
         ######## TRAN ##############33
-        if pose.mode == 130.0:
+        if mode == 130.0:
             signal = rc.z_trans(robot_pose, direction = 1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
-        if pose.mode == -130.0:
+        if mode == -130.0:
             signal = rc.z_trans(robot_pose, direction = -1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
         
-        if pose.mode == 130.1:
+        if mode == 130.1:
             signal = rc.y_trans(robot_pose, direction = 1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
-        if pose.mode == -130.1:
+        if mode == -130.1:
             signal = rc.y_trans(robot_pose, direction = -1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
 
-        if pose.mode == 130.2:
+        if mode == 130.2:
             signal = rc.x_trans(robot_pose, direction = 1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             ##self.move_status_pub.publish(move_status_msg)
 
-        if pose.mode == -130.2:
+        if mode == -130.2:
             signal = rc.x_trans(robot_pose, direction = -1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             ##self.move_status_pub.publish(move_status_msg)
         
         ############ RCM ###############
         if pose.mode == 132.0:
             signal = rc.yz_rcm(robot_pose, direction = 1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
         if pose.mode == -132.0:
             signal = rc.yz_rcm(robot_pose, direction = -1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
         
         if pose.mode == 132.1:
             signal = rc.xz_rcm(robot_pose, direction = 1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
         if pose.mode == -132.1:
             signal = rc.xz_rcm(robot_pose, direction = -1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
-            if signal: move_status_msg = pose.orientation.z
+            if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
 
         if pose.mode == 0.0:
             rc.stop_command()
         # if signal: move_status_msg = pose.orientation.z
         # #self.move_status_pub.publish(move_status_msg)
-        print("publish is done")
+            print("publish is done")
     
     def gui_subcriber_callback(self, msg:UInt16):
         order_axis = ['z', 'x', 'y']
         if msg.data == 100:
             print(msg.data)
-            rcomp.main()
+            # rcomp.main()
 
 
         # for i in order_axis:
@@ -138,7 +138,7 @@ def main(args=None):
     node = RobotDriver()
     try:
         rclpy.spin(node=node)
-    except SystemExit:
+    except KeyboardInterrupt:
         rclpy.logging.get_logger("Quitting").info("Done")
     node.destroy_node()
     rclpy.shutdown()

@@ -2,35 +2,67 @@
 import rclpy
 import numpy as np
 from rclpy.node import Node
-from robot_interface.srv import RobotInit
+from robot_interface.srv import RobotCom
 import robot.excutor as re
+import threading
+import rclpy
+from robot.robot_slam_trn import RobotSLAMTrn
+from rclpy.executors import MultiThreadedExecutor
+
 
 class RobotInitService(Node):
     def __init__(self):
-        super().__init__("robot_services")
+        super().__init__("robots_services")
         self.get_logger().info("Service is initilized")
         self.srv = self.create_service(
-            RobotInit, 
-            'robot_init', 
-            self.robot_init
+            RobotCom, 
+            'robot_command', 
+            self.robot_command
             )
-
-    def robot_init(self, request, response):
         
-        if request.command == 100:
+        
+        
+    def robot_command(self, request, response):
+        speed = request.speed
+        stop_limit = request.stop_limit
+        target = request.coordinate
+        command = request.name
+        if request.mode == 100.0:
             
+            # trn = RobotSLAMTrn(target = 110000.0, axis = 'z', speed= 24)
             try: 
                 
-                signal = re.robot_init()
+                #trn = RobotSLAMTrn(target = 110000.0, axis = 'z', speed= 24)
+                # self.executor.add_node(trn)
+
+                signal = re.robot_init(speed=speed)
+                # rclpy.spin()
+                # executor_thread = threading.Thread(target=self.executor.spin, daemon=True)
+                # executor_thread.start()
+                # rate = trn.create_rate(2)
+                #print(rate)
+                # try:
+                    # while rclpy.ok():
+                    #     print('Help me body, you are my only hope')
+                    #     rate.sleep()
+                    # self.executor.spin()
+                # except KeyboardInterrupt:
+                #     pass
+                # rclpy.shutdown()
+            #finally:
+                    # self.executor.shutdown()
+                    # trn.destroy_node()
+                    # executor_thread.join()
+                
                 print("fo")
                 print("do")
+                response.result = 'True'
             except Exception as e:
                 print('error', e)
-                response.sucess = False
-            response.sucess = True
+                response.result = 'False'
+            
+            print(response.result)
         return response
-
-
 
 def main(args=None):
     rclpy.init(args=args)
@@ -39,7 +71,7 @@ def main(args=None):
     try:
         rclpy.spin(node=node)
         pass
-    except SystemExit or KeyboardInterrupt:
+    except KeyboardInterrupt:
         rclpy.logging.get_logger("Quitting").info("Done")
     node.destroy_node()
     rclpy.shutdown()

@@ -26,7 +26,10 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/RobotPose.msg"
+  "msg/RobotCommand.msg"
+  "msg/RobotFeedback.msg"
   "srv/RobotInit.srv"
+  "srv/RobotCom.srv"
   DEPENDENCIES geometry_msgs
 )
 ament_export_dependencies(rosidl_default_runtime)

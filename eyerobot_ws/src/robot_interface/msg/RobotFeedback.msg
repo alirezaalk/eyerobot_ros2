@@ -1,0 +1,9 @@
+string name
+float32 en0
+float32 en1
+float32 en2
+float32 en3
+float32 en4
+geometry_msgs/Vector3 key
+float32 mode
+string result

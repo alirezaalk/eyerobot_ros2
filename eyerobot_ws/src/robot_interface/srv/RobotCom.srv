@@ -1,0 +1,7 @@
+string name
+float32 mode
+uint64 speed
+uint64 stop_limit
+geometry_msgs/Pose coordinate
+---
+string result

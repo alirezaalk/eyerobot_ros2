@@ -21,11 +21,14 @@ import cv2
 import time
 from ui.packages.splash_screen import SplashScreen
 from robot_interface.msg import RobotPose
+from robot_interface.msg import RobotCommand
+from robot_interface.msg import RobotFeedback
 from std_msgs.msg import UInt16
-import robot.composed as rcomp
-from robot_interface.srv import RobotInit
+import robot.robot_excutor as rcomp
+# from robot_interface.srv import RobotCom
 ### Robot init import
 import robot.excutor as re
+import robot.robot_slam_trn 
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -54,9 +57,13 @@ class MainWindow(QMainWindow):
         self.ui.d445_start_but.clicked.connect(self.start_camera_subscription)
         self.ui.d445_stop_but.clicked.connect(self.stop_camera_subscription)
         
+
+
         # Basler Camera Top 
         self.cam_top_topic_name = "/cam_top"
         self.ui.start_camera_top.clicked.connect(self.cam_top_start_sub)
+
+
 
         ## Monitor the data
         self.pose_sub_topic= '/encoder_gui'
@@ -73,11 +80,32 @@ class MainWindow(QMainWindow):
         self.ui.clear_log_but.clicked.connect(self.clear_encoder_log)
         
         ### Robot command button 
-        self.ui.robot_init_but.clicked.connect(self.robot_init)
-        self.robot_init_client = self.node.create_client(
-                RobotInit, 
-                "robot_init")
-        self.req = RobotInit.Request()
+        self.ui.robot_init_but.clicked.connect(self.robot_init_cmd)
+
+        self.cmd_gui_pub = self.node.create_publisher(
+            RobotCommand,
+            '/cmd_pose',
+            10)
+
+        self.feedback_slam_gui_sub = self.node.create_subscription(
+            RobotFeedback,
+            '/slam_feedback',
+            self.feedback_slam_gui,
+            10)
+        self.feedback_value = [0,0,0]
+        self.feedback_result = ''
+        self.init_done = False
+        
+        ## TODO if case adding the Rosservice 
+        ### Service 
+        # self.robot_init_client = self.node.create_client(
+        #         RobotCom, 
+        #         "robot_command")
+        # self.req = RobotCom.Request()
+
+
+
+
         ## TODO add arrow button
         ## Arrow buttons
         # self.ui.control_up.mousePressEvent = self.emit_signal_up
@@ -91,8 +119,7 @@ class MainWindow(QMainWindow):
     def show(self):
         self.ui.show()
 
-    
-    
+
     ##### 
     def show_frame(self, target_label: QLabel, image ):
         # # scaling the image while showing in the ui
@@ -106,28 +133,141 @@ class MainWindow(QMainWindow):
             cv2.imshow('frame', image)
             cv2.waitKey(1)
 
-
-    
-    
-    
     #################################### Main Page ###########################
-    def robot_init(self):
-        while not self.robot_init_client.wait_for_service(timeout_sec = 1.0):
-            self.node.get_logger().error("Serive is not available!")
-        self.ui.log_console.append("robot is initlizing")
-        self.req.command = 100
-        self.future = self.robot_init_client.call_async(self.req)
-        print(self.future)
-        # msg.data= 100
-        # self.robot_init_pub.publish(msg)
-        # # rcomp.main()
-        # signal = True
-        # if signal:
-        #     self.ui.log_console.clear()
-        #     self.ui.log_console.append("initilizing is Done")
-        # if not signal:
-        #     self.ui.log_console.clear()
-        #     self.ui.log_console.append("something is wrong")
+    def robot_init_cmd(self):
+        self.ui.log_console.append("init is pressed")
+        self.init_timer = self.node.create_timer(0.01, self.slam_cmd_init)
+        self.init_done = False
+        self.ui.log_encoder_2.clear()
+        log_text = "Initialization Is Pressed"
+        self.ui.log_encoder_2.append(log_text)
+       
+
+    def feedback_slam_gui(self, feedback:RobotFeedback):
+        """
+        This function is responsible for subscribing the feedback in GUI coming from SLAM
+        3 important parameters is 
+        feedback name : returns the name of the current mission
+        feedback mode : return the mode and axis of the motion
+        feedback_key : return the current status of the motion
+            111 : ongoing
+            100 : done
+            200 : failed
+        feedback_value = [
+        0- feedback_name
+        1- feedback_mode
+        2- feedback_key
+        ]
+        """
+        feedback_name = feedback.name
+        self.feedback_result = feedback.result
+        self.feedback_mode = feedback.key.x
+        self.feedback_key = feedback.key.y
+        self.feedback_value = [feedback_name, feedback.key.x, feedback.key.y]
+
+        
+    def slam_cmd_init(self):
+        """
+        This function activates based on the timer_robot_init 
+        Get the data from the slam and send out the init command
+        Init parameters can be set with the UI 
+        TODO add the init parameters to the Project config
+
+        """
+        ### set the command
+        cmd = RobotCommand()
+        cmd.speed = 50
+        cmd.stop_limit = 1000
+        cmd.coordinate.position.x = 100000.0
+        cmd.coordinate.position.y = 100000.0
+        cmd.coordinate.position.z = 100000.0
+        cmd.coordinate.orientation.x = 0.0
+        cmd.coordinate.orientation.y = 0.0
+        cmd.coordinate.orientation.z = 0.0
+        ## first step of the init
+        self.ui.log_encoder_2.clear()
+        if self.feedback_value == [0,0,0] or ['Standby', 0.0, 0.0] :
+            cmd.name = 'robot_init'
+            cmd.mode = 130.0  
+            self.cmd_gui_pub.publish(cmd)
+            
+        ## the robot is in init_z
+        if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.0 and self.feedback_value[2] == 111.0:
+            cmd.name = 'robot_init'
+            cmd.mode = 130.0  
+            self.cmd_gui_pub.publish(cmd) 
+            log_text = "Initialization X-Axis"
+            self.ui.log_encoder_2.append(log_text)    
+        ## init_z is done and send a command to start init_y
+        if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.0 and self.feedback_value[2] == 100.0 :
+            print('Z is done')
+            cmd.name = 'robot_init'
+            cmd.mode = 130.1
+            self.cmd_gui_pub.publish(cmd)
+            log_text = "X-Axis is Done-Initialization Y-Axis Starts"
+            self.ui.log_encoder_2.append(log_text)
+        ## robot is in init_y 
+        if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.1 and self.feedback_value[2] == 111.0:
+            print(self.feedback_result)
+            cmd.name = 'robot_init'
+            cmd.mode = 130.1
+            self.cmd_gui_pub.publish(cmd)
+            log_text = "Initialization Y-Axis"
+            self.ui.log_encoder_2.append(log_text)
+            
+        ## init_y is done and send 130.2 to start init_x
+        if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.1 and self.feedback_value[2] == 100.0:
+            print(self.feedback_result)
+            cmd.name = 'robot_init'
+            cmd.mode = 130.2
+            self.cmd_gui_pub.publish(cmd)
+            log_text = "Y-Axis is Done- Initialization Z-Axis Starts"
+            self.ui.log_encoder_2.append(log_text)
+        ## init_x is ongoing
+        if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.2 and self.feedback_value[2] == 111.0:
+            print(self.feedback_result)
+            cmd.name = 'robot_init'
+            cmd.mode = 130.2
+            self.cmd_gui_pub.publish(cmd)
+            log_text = "Initialization Is Done"
+            self.ui.log_encoder_2.append(log_text)
+        ## init_x is done 
+        if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.2 and self.feedback_value[2] == 100.0:
+            print(self.feedback_result)
+            print('DONE!')
+            self.init_done = True
+            cmd.name = 'robot_init'
+            cmd.mode = 0.0
+            self.cmd_gui_pub.publish(cmd)
+            self.init_timer.cancel()
+            log_text = "Initialization Is Done-Timer Is OFF"
+            self.ui.log_encoder_2.append(log_text)
+        if self.init_done:
+            print(self.feedback_value)
+            self.init_timer.cancel()
+            self.cmd_gui_pub.publish(cmd)
+
+
+
+
+    ########## SERVICE
+    # def robot_init(self):
+    #     while not self.robot_init_client.wait_for_service(timeout_sec = 1.0):
+    #         self.node.get_logger().error("Serive is not available!")
+    #     self.ui.log_console.append("robot is initlizing")
+    #     self.req.mode = 100.0
+    #     self.req.speed = 38
+    #     self.req.stop_limit = 100
+    #     self.req.name = 'Init'
+    #     self.req.coordinate.position.x = 100000.0
+    #     self.req.coordinate.position.y = 100000.0
+    #     self.req.coordinate.position.z = 100000.0
+    #     self.req.coordinate.orientation.x = 100000.0
+    #     self.req.coordinate.orientation.y = 100000.0
+    #     self.req.coordinate.orientation.z = 0.0
+    #     self.future = self.robot_init_client.call_async(self.req)
+    #     print(self.future)
+        
     
     def clear_encoder_log(self):
         self.ui.log_encoder.clear()
@@ -148,7 +288,7 @@ class MainWindow(QMainWindow):
             1)
 
     def log_encoder(self, pose:RobotPose):
-        
+        # self.init_timer.destroy()
         robot_pose = pose.mode#  # [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
         # robot_pose = f"{str(robot_pose)}\n"
         print(robot_pose)
@@ -256,20 +396,23 @@ def test_():
 
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
-    #app = QApplication(sys.argv)
-    win = MainWindow()
+    try:
+        app = QtWidgets.QApplication(sys.argv)
+        #app = QApplication(sys.argv)
+        win = MainWindow()
+        
+        splash_screen = SplashScreen()
+        splash_screen.show()
+        app.processEvents()
+        # Display splash screen while UI loads
+        splash_screen.finish(win.ui)
+        win.show()
+        # app.exec()
+        sys.exit(app.exec_())
     
-    splash_screen = SplashScreen()
-    splash_screen.show()
-    app.processEvents()
-    # Display splash screen while UI loads
-    splash_screen.finish(win.ui)
-    win.show()
-    # app.exec()
-    
-    
-    sys.exit(app.exec_())
+    except KeyboardInterrupt:
+        pass
+        
 if __name__ == "__main__":
     # app = QtWidgets.QApplication(sys.argv)
     # #app = QApplication(sys.argv)
