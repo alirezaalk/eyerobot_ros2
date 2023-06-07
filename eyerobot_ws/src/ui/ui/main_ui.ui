@@ -520,6 +520,20 @@
                  <property name="topMargin">
                   <number>20</number>
                  </property>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="Calibration">
+                   <property name="text">
+                    <string>Robot Calibration </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="13" column="0">
+                  <widget class="QProgressBar" name="progressBar">
+                   <property name="value">
+                    <number>24</number>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="1" column="0">
                   <layout class="QGridLayout" name="gridLayout_15">
                    <property name="topMargin">
@@ -542,7 +556,7 @@
                       <enum>Qt::LeftToRight</enum>
                      </property>
                      <property name="text">
-                      <string>Y-Axis</string>
+                      <string>Initiliziation</string>
                      </property>
                     </widget>
                    </item>
@@ -555,19 +569,25 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="14" column="0">
+                  <spacer name="verticalSpacer_21">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>300</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item row="3" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_3">
                    <property name="topMargin">
                     <number>10</number>
                    </property>
                   </layout>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="Calibration">
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
                  </item>
                  <item row="0" column="0">
                   <widget class="QLabel" name="init_label">
@@ -589,9 +609,6 @@
                     <string>Robot Initilization</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="14" column="0">
-                  <widget class="QTextEdit" name="textEdit"/>
                  </item>
                  <item row="8" column="0">
                   <widget class="QPushButton" name="robot_calib_but">
@@ -633,13 +650,6 @@ font: 75 16pt &quot;Ubuntu Condensed&quot;;
                    </property>
                    <property name="frameShadow">
                     <enum>QFrame::Sunken</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="0">
-                  <widget class="QProgressBar" name="progressBar">
-                   <property name="value">
-                    <number>24</number>
                    </property>
                   </widget>
                  </item>

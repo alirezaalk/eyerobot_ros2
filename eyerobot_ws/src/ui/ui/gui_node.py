@@ -81,6 +81,7 @@ class MainWindow(QMainWindow):
         
         ### Robot command button 
         self.ui.robot_init_but.clicked.connect(self.robot_init_cmd)
+        self.ui.robot_calib_but.clicked.connect(self.robot_calibration)
 
         self.cmd_gui_pub = self.node.create_publisher(
             RobotCommand,
@@ -113,13 +114,22 @@ class MainWindow(QMainWindow):
         # self.ui.control_left.mousePressEvent = self.emit_signal_left
         # self.ui.control_right.mousePressEvent = self.emit_signal_right
         
+        ## Set the ui elements in start mode
+        self.ui.progressBar.setValue(0)
     
     
     ########################## Display contained UI ##############################
     def show(self):
         self.ui.show()
 
+    
+    def update_progressBar(self, percent):
+        self.ui.progressBar.setValue(percent)
 
+    
+    def update_console_encoder_2(self, text):
+        # log_text = "Calibration Is Pressed"
+        self.ui.log_encoder_2.append(text)
     ##### 
     def show_frame(self, target_label: QLabel, image ):
         # # scaling the image while showing in the ui
@@ -141,7 +151,15 @@ class MainWindow(QMainWindow):
         self.ui.log_encoder_2.clear()
         log_text = "Initialization Is Pressed"
         self.ui.log_encoder_2.append(log_text)
+        self.update_progressBar(0)
        
+    def robot_calibration(self):
+        self.ui.log_console.append("Calibration Button is pressed")
+        self.calibration_timer = self.node.create_timer(0.01, self.slam_calibration_cmd)
+        self.calib_done = False
+        self.update_console_encoder_2("Calibration Is Pressed")
+        self.update_progressBar(0)
+        self.feedback_value == [0,0,0]
 
     def feedback_slam_gui(self, feedback:RobotFeedback):
         """
@@ -165,7 +183,30 @@ class MainWindow(QMainWindow):
         self.feedback_key = feedback.key.y
         self.feedback_value = [feedback_name, feedback.key.x, feedback.key.y]
 
-        
+    
+    def slam_calibration_cmd(self):
+        ### set the command
+        cmd = RobotCommand()
+        cmd.speed = 50
+        cmd.stop_limit = 1000
+        cmd.coordinate.position.x = 0.0
+        cmd.coordinate.position.y = 0.0
+        cmd.coordinate.position.z = 0.0
+        cmd.coordinate.orientation.x = 2.0
+        cmd.coordinate.orientation.y = 2.0
+        cmd.coordinate.orientation.z = 0.0
+
+        ## first step of the init
+        self.ui.log_encoder_2.clear()
+        if self.feedback_value == [0,0,0] or ['Standby', 0.0, 0.0] :
+            cmd.name = 'robot_calib'
+            cmd.mode = 132.0  
+            self.cmd_gui_pub.publish(cmd)
+            self.update_progressBar(5)
+
+
+
+
     def slam_cmd_init(self):
         """
         This function activates based on the timer_robot_init 
@@ -190,50 +231,50 @@ class MainWindow(QMainWindow):
             cmd.name = 'robot_init'
             cmd.mode = 130.0  
             self.cmd_gui_pub.publish(cmd)
-            
+            self.update_progressBar(5)
         ## the robot is in init_z
         if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.0 and self.feedback_value[2] == 111.0:
             cmd.name = 'robot_init'
             cmd.mode = 130.0  
             self.cmd_gui_pub.publish(cmd) 
             log_text = "Initialization X-Axis"
-            self.ui.log_encoder_2.append(log_text)    
+            self.ui.log_encoder_2.append(log_text)
+            self.update_progressBar(20)  
         ## init_z is done and send a command to start init_y
         if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.0 and self.feedback_value[2] == 100.0 :
-            print('Z is done')
             cmd.name = 'robot_init'
             cmd.mode = 130.1
             self.cmd_gui_pub.publish(cmd)
             log_text = "X-Axis is Done-Initialization Y-Axis Starts"
             self.ui.log_encoder_2.append(log_text)
+            self.update_progressBar(33)
         ## robot is in init_y 
         if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.1 and self.feedback_value[2] == 111.0:
-            print(self.feedback_result)
             cmd.name = 'robot_init'
             cmd.mode = 130.1
             self.cmd_gui_pub.publish(cmd)
             log_text = "Initialization Y-Axis"
             self.ui.log_encoder_2.append(log_text)
+            self.update_progressBar(55)
             
         ## init_y is done and send 130.2 to start init_x
         if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.1 and self.feedback_value[2] == 100.0:
-            print(self.feedback_result)
             cmd.name = 'robot_init'
             cmd.mode = 130.2
             self.cmd_gui_pub.publish(cmd)
             log_text = "Y-Axis is Done- Initialization Z-Axis Starts"
             self.ui.log_encoder_2.append(log_text)
+            self.update_progressBar(66)
         ## init_x is ongoing
         if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.2 and self.feedback_value[2] == 111.0:
-            print(self.feedback_result)
             cmd.name = 'robot_init'
             cmd.mode = 130.2
             self.cmd_gui_pub.publish(cmd)
             log_text = "Initialization Is Done"
             self.ui.log_encoder_2.append(log_text)
+            self.update_progressBar(85)
         ## init_x is done 
         if self.feedback_value[0] == 'robot_init' and abs(self.feedback_value[1]) == 130.2 and self.feedback_value[2] == 100.0:
-            print(self.feedback_result)
             print('DONE!')
             self.init_done = True
             cmd.name = 'robot_init'
@@ -242,10 +283,12 @@ class MainWindow(QMainWindow):
             self.init_timer.cancel()
             log_text = "Initialization Is Done-Timer Is OFF"
             self.ui.log_encoder_2.append(log_text)
+            self.update_progressBar(100)
         if self.init_done:
-            print(self.feedback_value)
+            print('current result: ', self.feedback_value)
             self.init_timer.cancel()
             self.cmd_gui_pub.publish(cmd)
+            
 
 
 
@@ -277,7 +320,7 @@ class MainWindow(QMainWindow):
         robot_pose = [pose.en0, pose.en1, pose.en2, pose.en3, pose.en4]
         speed = pose.speed
         name = pose.name
-        self.ui.log_encoder.append(f"{str(robot_pose)} \n {str(speed)}")
+        self.ui.log_encoder.append(f"{str(robot_pose)}")
     
     def monitor_encoders(self):
         print("monitor data started")
