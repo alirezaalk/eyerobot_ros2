@@ -154,12 +154,28 @@ class MainWindow(QMainWindow):
         self.update_progressBar(0)
        
     def robot_calibration(self):
+        cmd = RobotCommand()
+        cmd.name = 'robot_calib_set_target'
+        ## 132.2 for 
+        cmd.mode = 132.2  
+        cmd.speed = 50
+        cmd.stop_limit = 500
+        cmd.coordinate.position.x = 0.0
+        cmd.coordinate.position.y = 0.0
+        cmd.coordinate.position.z = 0.0
+        cmd.coordinate.orientation.x = 2.0
+        cmd.coordinate.orientation.y = 2.0
+        cmd.coordinate.orientation.z = 0.0
+        self.cmd_gui_pub.publish(cmd)
+        print(cmd)
+        print("First Tiinmmme")
         self.ui.log_console.append("Calibration Button is pressed")
         self.calibration_timer = self.node.create_timer(0.01, self.slam_calibration_cmd)
         self.calib_done = False
         self.update_console_encoder_2("Calibration Is Pressed")
         self.update_progressBar(0)
-        self.feedback_value == [0,0,0]
+        # self.feedback_value == [0,0,0]
+        
 
     def feedback_slam_gui(self, feedback:RobotFeedback):
         """
@@ -188,22 +204,39 @@ class MainWindow(QMainWindow):
         ### set the command
         cmd = RobotCommand()
         cmd.speed = 50
-        cmd.stop_limit = 1000
+        cmd.stop_limit = 500
         cmd.coordinate.position.x = 0.0
         cmd.coordinate.position.y = 0.0
         cmd.coordinate.position.z = 0.0
         cmd.coordinate.orientation.x = 2.0
         cmd.coordinate.orientation.y = 2.0
         cmd.coordinate.orientation.z = 0.0
-
+        print(self.feedback_value)
         ## first step of the init
-        self.ui.log_encoder_2.clear()
-        if self.feedback_value == [0,0,0] or ['Standby', 0.0, 0.0] :
+        # self.ui.log_encoder_2.clear()
+        
+            # 132.0 first attemp for calcultion of the target
+        if self.feedback_value == [0,0,0]:
+            cmd.name = 'robot_calib_set_target'
+            cmd.mode = 132.0  
+            self.cmd_gui_pub.publish(cmd)
+            print(cmd)
+            self.update_progressBar(2)
+        if self.feedback_value == ['robot_calib',132.2,122.0]:
+            
             cmd.name = 'robot_calib'
             cmd.mode = 132.0  
             self.cmd_gui_pub.publish(cmd)
+            print(cmd)
             self.update_progressBar(5)
-
+        if self.feedback_value == ['robot_calib',132.0,111.0]:
+            # print("HI")
+            cmd.mode = 132.0 
+            self.cmd_gui_pub.publish(cmd)
+            self.update_progressBar(15)
+        else: 
+            print('Cancel')
+            self.calibration_timer.cancel()
 
 
 

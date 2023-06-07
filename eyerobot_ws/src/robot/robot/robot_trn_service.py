@@ -5,7 +5,7 @@ import rclpy
 from rclpy.context import Context
 from rclpy.node import Node
 from rclpy.parameter import Parameter
-
+import numpy as np
 from geometry_msgs.msg import Pose
 from robot_interface.msg import RobotPose
 from robot_interface.msg import RobotCommand
@@ -53,6 +53,9 @@ class RobotSLAM(Node):
         self.axis = ''
         self.stop_limit_ = 5000
         self.robot_speed = 0
+        self.targetpose = [0,0,0,0,0]
+        self.deg_xz = 0
+        self.deg_yz = 0
 
     def feedback_slam_gui(self):
         feedback = RobotFeedback()
@@ -114,7 +117,7 @@ class RobotSLAM(Node):
                 feedback = [-130.2, 111.0, 0.0]
                 pose.mode = -130.2
                 self.cmd_slam_robot_pub.publish(pose)
-                rclpy.logging.get_logger("move Forward_x").info(str(robot_pose))
+                rclpy.logging.get_logger("move Forward_x").info(str(self.robot_pose))
                 return feedback
             if robot_pose[3] > target and robot_pose[4] > target:
                 feedback = [130.2, 111.0, 0.0]
@@ -123,14 +126,103 @@ class RobotSLAM(Node):
                 rclpy.logging.get_logger("move backwar_x").info(str(robot_pose))
                 return feedback
 
+    def target_calculator(self, robot_pose, xz_deg= 0, yz_deg= 0):
+        xz_deg = xz_deg/-180*np.pi
+        yz_deg = yz_deg/-180*np.pi
+        link1 = 29.5
+        link2 = 49.0
+        offset1 = 4.75
+        offsexz_deg = 19
+        Ltool = 88.90
+        rcmlength = 20
+        DISTANCE_SLIDE=230000
+        target = [-(Ltool - rcmlength), link2, link1-offsexz_deg]
+        d5 = (target[0] + offsexz_deg * np.sin(xz_deg) + offset1 * np.cos(xz_deg) + link2 * np.cos(xz_deg) * np.sin(yz_deg) - link1 * np.sin(xz_deg)) / (-np.cos(xz_deg) * np.cos(yz_deg))
+        d3 =  target[1] + d5 * np.sin(yz_deg) - link2 * np.cos(yz_deg)
+        d1 =  target[2] - d5 * np.sin(xz_deg) * np.cos(yz_deg) - link1 * np.cos(xz_deg) - link2 * np.sin(xz_deg) * np.sin(yz_deg) - offset1 * np.sin(xz_deg) + offsexz_deg * np.cos(xz_deg)
+        targetpos = [0,0,0,0,0]
+        targetpos[0] =  (d5 + target[0] + offset1) * 10000.0
+        targetpos[2] =  robot_pose[2]- d3 * 10000.0
+        targetpos[1] = targetpos[2] - DISTANCE_SLIDE * np.tan(yz_deg)
+        targetpos[4] =  robot_pose[4] - d1 * 10000.0
+        targetpos[3] = targetpos[4] + DISTANCE_SLIDE * np.tan(xz_deg)
+        return targetpos# , d5, d3, d1
+    
+    def rcm_move(self, curr_pose, target, deg_xz, deg_yz, speed, axis, brake = 1000):
+            pose = RobotPose()
+            print('target', target)
+            print('deg', deg_xz)
+            pose.speed = speed
+            robot_pose = curr_pose
+            #if robot_pose[0] < self.target[0] and robot_pose[1] < self.target[1] and robot_pose[2]< self.target[2]:
+            if axis == 132.0:
+                if (abs(robot_pose[0] - target[0]) < brake) or  (abs(robot_pose[1] - target[1]) < brake or abs(robot_pose[2] - target[2]) < brake):
+                    # data.data = pose.orientation.z
+                    feedback = [132.0, 100.0, 1.0]             
+                    pose.mode = 0.0
+                    pose.speed = 0
+                    rclpy.logging.get_logger("STOP").info(str(robot_pose))
+                    self.cmd_slam_robot_pub.publish(pose)
+                    return feedback
+                    # rclpy.logging.get_logger("STOP").info(str(robot_pose))
+                    # self.cmd_pub.publish(pose)
+                if deg_xz > 0:
+                    feedback = [132.0, 111.0, 1.0]             
+                    pose.mode = -132.0
+                    pose.speed = 0
+                    rclpy.logging.get_logger("forward_xz").info(str(robot_pose))
+                    self.cmd_slam_robot_pub.publish(pose)
+                    return feedback
+        
+                if deg_xz < 0:
+                    feedback = [132.0, 111.0, 1.0] 
+                    pose.mode = 132.0
+                    self.cmd_pub.publish(pose)
+                    rclpy.logging.get_logger("backward_xz").info(str(robot_pose))
+                    return feedback
+                else :
+                    feedback = [0.0,0.0,0.0]
+                    return feedback
+            
+            if axis == 132.1:
+                if (abs(robot_pose[0] - target[0]) < brake) or  (abs(robot_pose[1] - target[1]) < brake or abs(robot_pose[2] - target[2]) < brake):
+                    # data.data = pose.orientation.z
+                    feedback = [132.1, 100.0, 1.0]             
+                    pose.mode = 0
+                    pose.speed = 0
+                    rclpy.logging.get_logger("STOP").info(str(robot_pose))
+                    self.cmd_slam_robot_pub.publish(pose)
+                    return feedback
+                    # rclpy.logging.get_logger("STOP").info(str(robot_pose))
+                    # self.cmd_pub.publish(pose)
+                if deg_yz > 0:
+                    feedback = [132.1, 111.0, 1.0]             
+                    pose.mode = -132.1
+                    pose.speed = 0
+                    rclpy.logging.get_logger("forward_yz").info(str(robot_pose))
+                    self.cmd_slam_robot_pub.publish(pose)
+                    return feedback
+        
+                if deg_yz < 0:
+                    feedback = [132.1, 111.0, 1.0] 
+                    pose.mode = 132.1
+                    self.cmd_pub.publish(pose)
+                    rclpy.logging.get_logger("backward_yz").info(str(robot_pose))
+                    return feedback
+            
     
     def command_callback(self, cmd:RobotCommand):
         feedback  = RobotFeedback()
+        mode = round(cmd.mode,1)
+        brake = cmd.stop_limit
+        speed = cmd.speed
+        self.deg_xz = cmd.coordinate.orientation.z
+        self.deg_yz = cmd.coordinate.orientation.y
+        feedback.key.x = 0.0
+        feedback.key.y = 0.0
+        print(self.robot_pose)
         ### Get the init Command
         if cmd.name == 'robot_init':
-            speed = cmd.speed
-            mode = round(cmd.mode,1)
-            brake = cmd.stop_limit
             target_z = cmd.coordinate.position.z
             target_y = cmd.coordinate.position.y
             target_x = cmd.coordinate.position.x
@@ -164,6 +256,38 @@ class RobotSLAM(Node):
                 feedback.key.y = 0.0
                 self.feedback_slam_gui_pub.publish(feedback)
 
+        if cmd.name == 'robot_calib_set_target':
+            rclpy.logging.get_logger(f"Recieved_{mode}_{speed}_{brake}").info(cmd.name)
+            if mode == 132.2 :
+                self.deg_xz = cmd.coordinate.orientation.z
+                self.deg_yz = cmd.coordinate.orientation.y
+                self.targetpose = self.target_calculator(self.robot_pose, self.deg_xz, self.deg_yz)
+                print('Hi', self.targetpose)
+                feedback.name = 'robot_calib'
+                feedback.key.x = mode
+                feedback.key.y = 122.0
+                self.feedback_slam_gui_pub.publish(feedback)
+                print(feedback)
+        if cmd.name == 'robot_calib':
+            ## RCM xz
+            speed = 100
+            if mode == 132.0:
+                print("RCM XZ", self.robot_pose)
+                print(self.targetpose)
+                
+                result = self.rcm_move(self.robot_pose, self.targetpose, deg_xz = self.deg_xz, deg_yz = self.deg_yz, speed=speed,  axis= mode )
+                feedback.name = cmd.name
+                feedback.key.x = mode
+                feedback.key.y = result[1]
+                self.feedback_slam_gui_pub.publish(feedback)
+            if mode == 132.1:
+                print("RCM YZ")
+                print(self.targetpose)
+                # result = self.rcm_move( self.robot_pose, self.targetpose, deg_xz = deg_xz, deg_yz = deg_yz, speed=speed, brake=brake, axis= mode )
+                # feedback.name = cmd.name
+                # feedback.key.x = result[0]
+                # feedback.key.y = result[1]
+                # self.feedback_slam_gui_pub.publish(feedback)
 
     def pose_callback(self, pose:RobotPose):
         try:
