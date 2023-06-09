@@ -194,7 +194,7 @@ class MainWindow(QMainWindow):
         self.feedback_value = [feedback_name, feedback.key.x, feedback.key.y]
         ## Update the log_encoders 
         self.ui.log_encoder_2.clear()
-        self.ui.log_encoder_2.append(f'Feedback:, {str(self.feedback_value)}')
+        self.ui.log_encoder_2.append(f'Feedback: {str(self.feedback_value)}')
         self.ui.log_status.clear()
         self.ui.log_status.append(f'Robot Status: {self.feedback_value[0]}')
 
@@ -463,7 +463,7 @@ class MainWindow(QMainWindow):
             print("subscription faild")
         self.show_frame(self.ui.camera_top_image, cv_image)
     
-    
+
     def cam_top_start_sub(self, state):
         log_string = "Microscope Camera is running\n"
         # self.ui.log_console.append("Medical Autonomy and Precision Surgery Laboratory - Robot Control UI\n")
