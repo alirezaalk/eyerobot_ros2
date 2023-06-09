@@ -93,10 +93,11 @@ class MainWindow(QMainWindow):
             '/slam_feedback',
             self.feedback_slam_gui,
             10)
-        self.feedback_value = [0,0,0]
+        self.feedback_value = [0.0,0.0,0.0]
         self.feedback_result = ''
         self.init_done = False
-        
+        self.deg_xz = 2.0
+        self.deg_yz = 2.0
         ## TODO if case adding the Rosservice 
         ### Service 
         # self.robot_init_client = self.node.create_client(
@@ -152,29 +153,22 @@ class MainWindow(QMainWindow):
         log_text = "Initialization Is Pressed"
         self.ui.log_encoder_2.append(log_text)
         self.update_progressBar(0)
-       
+
+
     def robot_calibration(self):
         cmd = RobotCommand()
         cmd.name = 'robot_calib_set_target'
-        ## 132.2 for 
-        cmd.mode = 132.2  
-        cmd.speed = 50
-        cmd.stop_limit = 500
-        cmd.coordinate.position.x = 0.0
-        cmd.coordinate.position.y = 0.0
-        cmd.coordinate.position.z = 0.0
-        cmd.coordinate.orientation.x = 2.0
-        cmd.coordinate.orientation.y = 2.0
-        cmd.coordinate.orientation.z = 0.0
-        self.cmd_gui_pub.publish(cmd)
-        print(cmd)
-        print("First Tiinmmme")
+        self.feedback_value == [0.0,0.0,0.0]
+        self.deg_xz = 1.0
+        self.deg_yz = 1.0
+        self.rcm_target_pose = self.target_calculator(self.robot_pose, self.deg_xz, self.deg_yz)
+        print('calculated_pose: ', self.rcm_target_pose)
         self.ui.log_console.append("Calibration Button is pressed")
         self.calibration_timer = self.node.create_timer(0.01, self.slam_calibration_cmd)
         self.calib_done = False
         self.update_console_encoder_2("Calibration Is Pressed")
-        self.update_progressBar(0)
-        # self.feedback_value == [0,0,0]
+        self.update_progressBar(1)
+        # print('calibration is pressed')
         
 
     def feedback_slam_gui(self, feedback:RobotFeedback):
@@ -198,46 +192,116 @@ class MainWindow(QMainWindow):
         self.feedback_mode = feedback.key.x
         self.feedback_key = feedback.key.y
         self.feedback_value = [feedback_name, feedback.key.x, feedback.key.y]
+        ## Update the log_encoders 
+        self.ui.log_encoder_2.clear()
+        self.ui.log_encoder_2.append(f'Feedback:, {str(self.feedback_value)}')
+        self.ui.log_status.clear()
+        self.ui.log_status.append(f'Robot Status: {self.feedback_value[0]}')
 
-    
+
     def slam_calibration_cmd(self):
         ### set the command
         cmd = RobotCommand()
-        cmd.speed = 50
-        cmd.stop_limit = 500
-        cmd.coordinate.position.x = 0.0
-        cmd.coordinate.position.y = 0.0
-        cmd.coordinate.position.z = 0.0
-        cmd.coordinate.orientation.x = 2.0
-        cmd.coordinate.orientation.y = 2.0
-        cmd.coordinate.orientation.z = 0.0
-        print(self.feedback_value)
-        ## first step of the init
-        # self.ui.log_encoder_2.clear()
-        
-            # 132.0 first attemp for calcultion of the target
-        if self.feedback_value == [0,0,0]:
-            cmd.name = 'robot_calib_set_target'
-            cmd.mode = 132.0  
-            self.cmd_gui_pub.publish(cmd)
-            print(cmd)
-            self.update_progressBar(2)
-        if self.feedback_value == ['robot_calib',132.2,122.0]:
-            
+        """
+        The Calibration Process:
+        To start the process: Either we have 
+        ['Standby', 0.0, 0.0] feedback from the slam 
+        or 
+        [0.0, 0.0, 0.0] after starting the progress
+        after that we need to calculate the first RCM movement with the posstive degree
+        then set the target point and move in yz and xz -- the flag is robot_calib
+        when the first movement is done we need to calculate the new target pose with the current robot_pose for returning and negative degrees
+        then we set the targetpoint and move in yz and xz --- the flag is robot_calib_r
+        then send the Calibration done signal to slam and slam put the robot in the standby and make the timer off
+        """
+        ## Start the movement in XZ
+        if self.feedback_value == [0.0,0.0,0.0] or self.feedback_value == ['Standby', 0.0, 0.0 ]:
             cmd.name = 'robot_calib'
-            cmd.mode = 132.0  
-            self.cmd_gui_pub.publish(cmd)
-            print(cmd)
-            self.update_progressBar(5)
-        if self.feedback_value == ['robot_calib',132.0,111.0]:
-            # print("HI")
             cmd.mode = 132.0 
+            cmd.target0 = self.rcm_target_pose[0]
+            cmd.target1 = self.rcm_target_pose[1]
+            cmd.target2 = self.rcm_target_pose[2]
+            cmd.target3 = self.rcm_target_pose[3]
+            cmd.target4 = self.rcm_target_pose[4]
+            cmd.coordinate.orientation.x = self.deg_xz
+            cmd.coordinate.orientation.y = self.deg_yz
             self.cmd_gui_pub.publish(cmd)
-            self.update_progressBar(15)
-        else: 
-            print('Cancel')
-            self.calibration_timer.cancel()
+            self.update_progressBar(3)
 
+        ## Movement is XZ is running 
+        if self.feedback_value == ['robot_calib',132.0,111.0] or self.feedback_value == ['robot_calib_r',132.0,111.0]:
+            cmd.name = self.feedback_value[0]
+            cmd.mode = 132.0 
+            cmd.target0 = self.rcm_target_pose[0]
+            cmd.target1 = self.rcm_target_pose[1]
+            cmd.target2 = self.rcm_target_pose[2]
+            cmd.target3 = self.rcm_target_pose[3]
+            cmd.target4 = self.rcm_target_pose[4]
+            cmd.coordinate.orientation.x = self.deg_xz
+            cmd.coordinate.orientation.y = self.deg_yz
+            self.cmd_gui_pub.publish(cmd)
+            if cmd.name == 'robot_calib':
+                self.update_progressBar(15)
+            if cmd.name == 'robot_calib_r':
+                self.update_progressBar(65)
+        
+        ## XZ Movement is Done
+        if self.feedback_value == ['robot_calib',132.0,100.0] or self.feedback_value == ['robot_calib_r',132.0,100.0] : 
+            cmd.name = self.feedback_value[0]
+            cmd.mode = 132.1 
+            cmd.target0 = self.rcm_target_pose[0]
+            cmd.target1 = self.rcm_target_pose[1]
+            cmd.target2 = self.rcm_target_pose[2]
+            cmd.target3 = self.rcm_target_pose[3]
+            cmd.target4 = self.rcm_target_pose[4]
+            cmd.coordinate.orientation.x = self.deg_xz
+            cmd.coordinate.orientation.y = self.deg_yz
+            self.cmd_gui_pub.publish(cmd)
+            if cmd.name == 'robot_calib':
+                self.update_progressBar(25)
+            if cmd.name == 'robot_calib_r':
+                self.update_progressBar(74)
+        if self.feedback_value == ['robot_calib',132.1,111.0] or self.feedback_value == ['robot_calib_r',132.1,111.0]:
+            cmd.name = self.feedback_value[0]
+            cmd.mode = 132.1 
+            cmd.target0 = self.rcm_target_pose[0]
+            cmd.target1 = self.rcm_target_pose[1]
+            cmd.target2 = self.rcm_target_pose[2]
+            cmd.target3 = self.rcm_target_pose[3]
+            cmd.target4 = self.rcm_target_pose[4]
+            cmd.coordinate.orientation.x = self.deg_xz
+            cmd.coordinate.orientation.y = self.deg_yz
+            self.cmd_gui_pub.publish(cmd)
+            if cmd.name == 'robot_calib':
+                self.update_progressBar(34)
+            if cmd.name == 'robot_calib_r':
+                self.update_progressBar(94)
+        
+        if self.feedback_value == ['robot_calib',132.1,100.0]:
+            self.deg_xz = -1.0
+            self.deg_yz = -1.0
+            self.rcm_target_pose = self.target_calculator(self.robot_pose, self.deg_xz, self.deg_yz)
+            cmd.name = 'robot_calib_r'
+            cmd.mode = 132.0 
+            cmd.target0 = self.rcm_target_pose[0]
+            cmd.target1 = self.rcm_target_pose[1]
+            cmd.target2 = self.rcm_target_pose[2]
+            cmd.target3 = self.rcm_target_pose[3]
+            cmd.target4 = self.rcm_target_pose[4]
+            cmd.coordinate.orientation.x = self.deg_xz
+            cmd.coordinate.orientation.y = self.deg_yz
+            self.cmd_gui_pub.publish(cmd)
+            self.update_progressBar(55)
+        ## the robot_calib_r is done means the robot returns to the original position
+        if self.feedback_value == ['robot_calib_r',132.1,100.0]:
+            cmd.name = 'robot_calib_r'
+            self.init_done = True
+            cmd.mode = 0.0
+            self.cmd_gui_pub.publish(cmd)
+            # print('Cancel')
+            # self.feedback_value = [0.0,0.0,0.0]
+            self.calibration_timer.cancel()
+            self.update_progressBar(100)
 
 
     def slam_cmd_init(self):
@@ -246,7 +310,6 @@ class MainWindow(QMainWindow):
         Get the data from the slam and send out the init command
         Init parameters can be set with the UI 
         TODO add the init parameters to the Project config
-
         """
         ### set the command
         cmd = RobotCommand()
@@ -258,6 +321,7 @@ class MainWindow(QMainWindow):
         cmd.coordinate.orientation.x = 0.0
         cmd.coordinate.orientation.y = 0.0
         cmd.coordinate.orientation.z = 0.0
+        
         ## first step of the init
         self.ui.log_encoder_2.clear()
         if self.feedback_value == [0,0,0] or ['Standby', 0.0, 0.0] :
@@ -324,7 +388,27 @@ class MainWindow(QMainWindow):
             
 
 
-
+    def target_calculator(self, robot_pose, xz_deg= 0, yz_deg= 0):
+        xz_deg = xz_deg/-180*np.pi
+        yz_deg = yz_deg/-180*np.pi
+        link1 = 29.5
+        link2 = 49.0
+        offset1 = 4.75
+        offsexz_deg = 19
+        Ltool = 88.90
+        rcmlength = 20
+        DISTANCE_SLIDE=230000
+        target = [-(Ltool - rcmlength), link2, link1-offsexz_deg]
+        d5 = (target[0] + offsexz_deg * np.sin(xz_deg) + offset1 * np.cos(xz_deg) + link2 * np.cos(xz_deg) * np.sin(yz_deg) - link1 * np.sin(xz_deg)) / (-np.cos(xz_deg) * np.cos(yz_deg))
+        d3 =  target[1] + d5 * np.sin(yz_deg) - link2 * np.cos(yz_deg)
+        d1 =  target[2] - d5 * np.sin(xz_deg) * np.cos(yz_deg) - link1 * np.cos(xz_deg) - link2 * np.sin(xz_deg) * np.sin(yz_deg) - offset1 * np.sin(xz_deg) + offsexz_deg * np.cos(xz_deg)
+        targetpos = [0,0,0,0,0]
+        targetpos[0] =  (d5 + target[0] + offset1) * 10000.0
+        targetpos[2] =  robot_pose[2]- d3 * 10000.0
+        targetpos[1] = targetpos[2] - DISTANCE_SLIDE * np.tan(yz_deg)
+        targetpos[4] =  robot_pose[4] - d1 * 10000.0
+        targetpos[3] = targetpos[4] + DISTANCE_SLIDE * np.tan(xz_deg)
+        return targetpos# , d5, d3, d1
 
     ########## SERVICE
     # def robot_init(self):
@@ -350,10 +434,10 @@ class MainWindow(QMainWindow):
 
     def encoder_gui(self, pose:RobotPose):
         self.ui.log_encoder.clear()
-        robot_pose = [pose.en0, pose.en1, pose.en2, pose.en3, pose.en4]
+        self.robot_pose = [pose.en0, pose.en1, pose.en2, pose.en3, pose.en4]
         speed = pose.speed
         name = pose.name
-        self.ui.log_encoder.append(f"{str(robot_pose)}")
+        self.ui.log_encoder.append(f"Encoders:{str(self.robot_pose)}")
     
     def monitor_encoders(self):
         print("monitor data started")
@@ -364,22 +448,22 @@ class MainWindow(QMainWindow):
             1)
 
     def log_encoder(self, pose:RobotPose):
-        # self.init_timer.destroy()
-        robot_pose = pose.mode#  # [pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y]
-        # robot_pose = f"{str(robot_pose)}\n"
-        print(robot_pose)
+       
+        self.robot_pose = pose.mode
+        
+        print(self.robot_pose)
         self.ui.log_console.clear()
-        # self.ui.table_encoder.append(f'{str(robot_pose)}')
-        self.ui.log_console.append(f"{str(robot_pose)}")  
+        self.ui.log_console.append(f"{str(self.robot_pose)}")  
+    
     # live camera extraction 
     def update_pixmap_cam_top(self, image_message: Image):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="passthrough")
         except:
             print("subscription faild")
-        # self.node.get_logger().info("Recieved")
-
         self.show_frame(self.ui.camera_top_image, cv_image)
+    
+    
     def cam_top_start_sub(self, state):
         log_string = "Microscope Camera is running\n"
         # self.ui.log_console.append("Medical Autonomy and Precision Surgery Laboratory - Robot Control UI\n")

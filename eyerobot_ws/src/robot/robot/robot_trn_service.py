@@ -86,6 +86,7 @@ class RobotSLAM(Node):
                 rclpy.logging.get_logger(f"move backward_{axis}").info(str(robot_pose))
                 return feedback
             
+       
         if axis == 130.1:
             if abs(robot_pose[1] - target) < brake and abs(robot_pose[2] - target) < brake:
                 feedback = [130.1, 100.0, 0.0]
@@ -113,6 +114,20 @@ class RobotSLAM(Node):
                 pose.speed = 0
                 rclpy.logging.get_logger("STOP").info(str(robot_pose))
                 return feedback
+            
+            ## TODO some times we need to add rcm in order to initilize. because the old movemet was RCM and can not be initilized just by checking these two
+            ## TODO in order to solve: first initlize the parallel joints (130.1 and 130.2) and then z (130.0)
+            """
+            if abs(robot_pose[3] - target) < brake or abs(robot_pose[4] - target) < brake:
+                if abs(robot_pose[3] - target) > brake:
+                    feedback = [-130.2, 111.0, 0.0]
+                    pose.mode = -132.1
+                    self.cmd_slam_robot_pub.publish(pose)
+                if abs(robot_pose[4] - target) > brake:
+                    feedback = [-130.2, 111.0, 0.0]
+                    pose.mode = 132.1
+                    self.cmd_slam_robot_pub.publish(pose)
+            """
             if robot_pose[3] < target and robot_pose[4] < target:
                 feedback = [-130.2, 111.0, 0.0]
                 pose.mode = -130.2
@@ -148,14 +163,16 @@ class RobotSLAM(Node):
         targetpos[3] = targetpos[4] + DISTANCE_SLIDE * np.tan(xz_deg)
         return targetpos# , d5, d3, d1
     
-    def rcm_move(self, curr_pose, target, deg_xz, deg_yz, speed, axis, brake = 1000):
+    def rcm_move(self, curr_pose, target, deg_xz, deg_yz, speed, axis, brake = 5000):
             pose = RobotPose()
             print('target', target)
             print('deg', deg_xz)
+            print('deg_yz', deg_yz)
             pose.speed = speed
             robot_pose = curr_pose
             #if robot_pose[0] < self.target[0] and robot_pose[1] < self.target[1] and robot_pose[2]< self.target[2]:
             if axis == 132.0:
+                diff = [abs(robot_pose[0] - target[0]), abs(robot_pose[1] - target[1]), abs(robot_pose[2] - target[2])]
                 if (abs(robot_pose[0] - target[0]) < brake) or  (abs(robot_pose[1] - target[1]) < brake or abs(robot_pose[2] - target[2]) < brake):
                     # data.data = pose.orientation.z
                     feedback = [132.0, 100.0, 1.0]             
@@ -166,68 +183,69 @@ class RobotSLAM(Node):
                     return feedback
                     # rclpy.logging.get_logger("STOP").info(str(robot_pose))
                     # self.cmd_pub.publish(pose)
-                if deg_xz > 0:
+                if deg_yz >= 0:
                     feedback = [132.0, 111.0, 1.0]             
                     pose.mode = -132.0
-                    pose.speed = 0
-                    rclpy.logging.get_logger("forward_xz").info(str(robot_pose))
-                    self.cmd_slam_robot_pub.publish(pose)
-                    return feedback
-        
-                if deg_xz < 0:
-                    feedback = [132.0, 111.0, 1.0] 
-                    pose.mode = 132.0
-                    self.cmd_pub.publish(pose)
-                    rclpy.logging.get_logger("backward_xz").info(str(robot_pose))
-                    return feedback
-                else :
-                    feedback = [0.0,0.0,0.0]
-                    return feedback
-            
-            if axis == 132.1:
-                if (abs(robot_pose[0] - target[0]) < brake) or  (abs(robot_pose[1] - target[1]) < brake or abs(robot_pose[2] - target[2]) < brake):
-                    # data.data = pose.orientation.z
-                    feedback = [132.1, 100.0, 1.0]             
-                    pose.mode = 0
-                    pose.speed = 0
-                    rclpy.logging.get_logger("STOP").info(str(robot_pose))
-                    self.cmd_slam_robot_pub.publish(pose)
-                    return feedback
-                    # rclpy.logging.get_logger("STOP").info(str(robot_pose))
-                    # self.cmd_pub.publish(pose)
-                if deg_yz > 0:
-                    feedback = [132.1, 111.0, 1.0]             
-                    pose.mode = -132.1
-                    pose.speed = 0
-                    rclpy.logging.get_logger("forward_yz").info(str(robot_pose))
+                    pose.speed = 20
+                    rclpy.logging.get_logger("backward_yz").info(str(robot_pose))
                     self.cmd_slam_robot_pub.publish(pose)
                     return feedback
         
                 if deg_yz < 0:
+                    feedback = [132.0, 111.0, 1.0] 
+                    pose.mode = 132.0
+                    self.cmd_slam_robot_pub.publish(pose)
+                    rclpy.logging.get_logger("forkward_yz").info(str(robot_pose))
+                    return feedback
+                
+            ## XZ / act 3,4 
+            
+            if axis == 132.1:
+                diff = [abs(robot_pose[0] - target[0]), abs(robot_pose[3] - target[3]), abs(robot_pose[4] - target[4])]
+                if (abs(robot_pose[0] - target[0]) < brake ) or  (abs(robot_pose[3] - target[3]) < brake or abs(robot_pose[4] - target[4]) < brake):
+                
+                    # data.data = pose.orientation.z
+                    pose.mode = 0.0
+                    pose.speed = 0
+                    feedback = [132.1, 100.0, 1.0]             
+                    rclpy.logging.get_logger("STOP").info(str(diff))
+                    self.cmd_slam_robot_pub.publish(pose)
+                    return feedback
+                    # rclpy.logging.get_logger("STOP").info(str(robot_pose))
+                    # self.cmd_pub.publish(pose)
+                if deg_xz > 0:
+                    feedback = [132.1, 111.0, 1.0]             
+                    pose.mode = -132.1
+                    pose.speed = 20
+                    rclpy.logging.get_logger("backward_xz").info(str(diff))
+                    self.cmd_slam_robot_pub.publish(pose)
+                    return feedback
+        
+                if deg_xz < 0:
                     feedback = [132.1, 111.0, 1.0] 
                     pose.mode = 132.1
-                    self.cmd_pub.publish(pose)
-                    rclpy.logging.get_logger("backward_yz").info(str(robot_pose))
+                    pose.speed = 20
+                    self.cmd_slam_robot_pub.publish(pose)
+                    rclpy.logging.get_logger("forward_xz").info(str(robot_pose))
                     return feedback
             
     
     def command_callback(self, cmd:RobotCommand):
+
         feedback  = RobotFeedback()
         mode = round(cmd.mode,1)
         brake = cmd.stop_limit
         speed = cmd.speed
-        self.deg_xz = cmd.coordinate.orientation.z
-        self.deg_yz = cmd.coordinate.orientation.y
         feedback.key.x = 0.0
         feedback.key.y = 0.0
+
         print(self.robot_pose)
-        ### Get the init Command
-        if cmd.name == 'robot_init':
+        ### GROBOT INITILIZATION
+        if cmd.name == 'robot_init' :
             target_z = cmd.coordinate.position.z
             target_y = cmd.coordinate.position.y
             target_x = cmd.coordinate.position.x
             rclpy.logging.get_logger(f"Recieved_{mode}_{speed}_{brake}_{target_z}").info(cmd.name)
-            
             if mode == 130.0 :
                 result = self.trn_move(self.robot_pose, target_z, speed=speed, brake=brake, axis= mode )
                 print(result)
@@ -255,39 +273,39 @@ class RobotSLAM(Node):
                 feedback.key.x = 0.0
                 feedback.key.y = 0.0
                 self.feedback_slam_gui_pub.publish(feedback)
+        
+        ## ROBOT CALIBRATION (RCM ROUND)
+        if cmd.name == 'robot_calib' or cmd.name == 'robot_calib_r':
+            self.targetpose = [cmd.target0, cmd.target1,cmd.target2,cmd.target3,cmd.target4]
+            self.deg_xz = cmd.coordinate.orientation.x
+            self.deg_yz = cmd.coordinate.orientation.y
+            speed = 20
 
-        if cmd.name == 'robot_calib_set_target':
-            rclpy.logging.get_logger(f"Recieved_{mode}_{speed}_{brake}").info(cmd.name)
-            if mode == 132.2 :
-                self.deg_xz = cmd.coordinate.orientation.z
-                self.deg_yz = cmd.coordinate.orientation.y
-                self.targetpose = self.target_calculator(self.robot_pose, self.deg_xz, self.deg_yz)
-                print('Hi', self.targetpose)
-                feedback.name = 'robot_calib'
-                feedback.key.x = mode
-                feedback.key.y = 122.0
-                self.feedback_slam_gui_pub.publish(feedback)
-                print(feedback)
-        if cmd.name == 'robot_calib':
-            ## RCM xz
-            speed = 100
+            # RCM YZ
             if mode == 132.0:
-                print("RCM XZ", self.robot_pose)
-                print(self.targetpose)
-                
+                # print("RCM YZ", self.robot_pose)
+                # print(self.targetpose)
                 result = self.rcm_move(self.robot_pose, self.targetpose, deg_xz = self.deg_xz, deg_yz = self.deg_yz, speed=speed,  axis= mode )
                 feedback.name = cmd.name
                 feedback.key.x = mode
                 feedback.key.y = result[1]
                 self.feedback_slam_gui_pub.publish(feedback)
+            ## RCM XZ
             if mode == 132.1:
-                print("RCM YZ")
-                print(self.targetpose)
-                # result = self.rcm_move( self.robot_pose, self.targetpose, deg_xz = deg_xz, deg_yz = deg_yz, speed=speed, brake=brake, axis= mode )
-                # feedback.name = cmd.name
-                # feedback.key.x = result[0]
-                # feedback.key.y = result[1]
-                # self.feedback_slam_gui_pub.publish(feedback)
+                # print("RCM XZ")
+                # print(self.targetpose)
+                result = self.rcm_move( self.robot_pose, self.targetpose, deg_xz = self.deg_xz, deg_yz = self.deg_yz, speed=speed, brake=5000, axis= mode )
+                feedback.name = cmd.name
+                feedback.key.x = mode
+                feedback.key.y = result[1]
+                self.feedback_slam_gui_pub.publish(feedback)
+            if mode == 0.0:
+                rc.stop_command()
+                feedback.name = 'Standby'
+                feedback.key.x = 0.0
+                feedback.key.y = 0.0
+                self.feedback_slam_gui_pub.publish(feedback)
+
 
     def pose_callback(self, pose:RobotPose):
         try:

@@ -36,7 +36,7 @@ class RobotDriver(Node):
         mode = round(pose.mode,1)
         command = pose.command
         name = pose.name
-        print(round(pose.mode,1))
+        print(mode)
         # self.get_logger().info(str(robot_pose))
         ### pose.oriention.z is the flag for mode
         signal = False
@@ -82,32 +82,35 @@ class RobotDriver(Node):
             ##self.move_status_pub.publish(move_status_msg)
         
         ############ RCM ###############
-        if pose.mode == 132.0:
+        if mode == 132.0:
             signal = rc.yz_rcm(robot_pose, direction = 1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
             if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
-        if pose.mode == -132.0:
+        if mode == -132.0:
             signal = rc.yz_rcm(robot_pose, direction = -1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
             if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
         
-        if pose.mode == 132.1:
+        if mode == 132.1:
+            speed = 24
             signal = rc.xz_rcm(robot_pose, direction = 1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveForward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
             if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
             
-        if pose.mode == -132.1:
+        if mode == -132.1:
+            print("jo")
+            speed = 46
             signal = rc.xz_rcm(robot_pose, direction = -1, dist = 100, speed = speed)
             rclpy.logging.get_logger(f"MoveBackward-{str(mode)}").info(f'{str(pose)}- {str(command)}- {name}')
             if signal: move_status_msg = pose.mode
             #self.move_status_pub.publish(move_status_msg)
 
-        if pose.mode == 0.0:
+        if mode == 0.0:
             rc.stop_command()
         # if signal: move_status_msg = pose.orientation.z
         # #self.move_status_pub.publish(move_status_msg)

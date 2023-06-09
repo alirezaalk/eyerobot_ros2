@@ -154,7 +154,7 @@ def target_calculator(robot_pose, xz_deg= 0, yz_deg= 0):
         return targetpos# , d5, d3, d1
 
         
-def main(target = [0,-0.6], axis = 'yz' ,args=None):
+def main(target = [-1,0], axis = 'xz' ,args=None):
     rclpy.init(args=args)
     node = RobotSLAMRcm(target_deg = target , axis= axis)
     
