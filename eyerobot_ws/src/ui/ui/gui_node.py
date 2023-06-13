@@ -132,12 +132,12 @@ class MainWindow(QMainWindow):
         # log_text = "Calibration Is Pressed"
         self.ui.log_encoder_2.append(text)
     ##### 
-    def show_frame(self, target_label: QLabel, image ):
+    def show_frame(self, target_label: QLabel, image):
         # # scaling the image while showing in the ui
         scale_factor = 0.5
         target_label.setPixmap(convert_cv_qt(image))
-        target_label.setMaximumHeight(image.shape[0] * scale_factor)
-        target_label.setMaximumWidth(image.shape[1] * scale_factor)
+        target_label.setMinimumHeight(image.shape[0] * scale_factor * 2.3)
+        target_label.setMinimumWidth(image.shape[1] * scale_factor)
         QApplication.processEvents()
         # time.sleep(0.1)
         if False: 
@@ -159,8 +159,8 @@ class MainWindow(QMainWindow):
         cmd = RobotCommand()
         cmd.name = 'robot_calib_set_target'
         self.feedback_value == [0.0,0.0,0.0]
-        self.deg_xz = 1.0
-        self.deg_yz = 1.0
+        self.deg_xz = 5.0
+        self.deg_yz = 5.0
         self.rcm_target_pose = self.target_calculator(self.robot_pose, self.deg_xz, self.deg_yz)
         print('calculated_pose: ', self.rcm_target_pose)
         self.ui.log_console.append("Calibration Button is pressed")
@@ -278,8 +278,8 @@ class MainWindow(QMainWindow):
                 self.update_progressBar(94)
         
         if self.feedback_value == ['robot_calib',132.1,100.0]:
-            self.deg_xz = -1.0
-            self.deg_yz = -1.0
+            self.deg_xz = -5.0
+            self.deg_yz = -5.0
             self.rcm_target_pose = self.target_calculator(self.robot_pose, self.deg_xz, self.deg_yz)
             cmd.name = 'robot_calib_r'
             cmd.mode = 132.0 
