@@ -1,10 +1,1 @@
-string name
-float32 en0
-float32 en1
-float32 en2
-float32 en3
-float32 en4
-geometry_msgs/Pose coordinate
-float32 mode
-uint64 speed
-float32 command
+/home/alireza/projects/eyerobot-ros2/eyerobot_ws/src/robot_interface/msg/RobotPose.msg
