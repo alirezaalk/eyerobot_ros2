@@ -13,15 +13,19 @@ import sys
 import rclpy 
 from rclpy.node import Node
 from robot_interface.msg import RobotCommand
+from robot_interface.msg import RobotJoystick
+
+
 class InputDeviceNode(Node):
     def __init__(self):
         super().__init__("Input_device_node")
         self.get_logger().info("Joystick node has been started")
         self.counter_ = 0
+        self.mode_ = 'trn'
         # self.device, self.address = self.input_setup()
         self.dev, self.addr = self.joystick_setup()
         self.get_logger().info(f"device = {self.dev}, address is : {self.addr}")
-        self.usb_input_pub = self.create_publisher(RobotCommand, '/input_signal', 10)
+        self.usb_input_pub = self.create_publisher(RobotJoystick, '/input_signal', 10)
         self.input_signal_read_timer = self.create_timer(0.01, self.joystick_reader)
 
 
@@ -53,13 +57,95 @@ class InputDeviceNode(Node):
         js = self.dev.read(self.addr, 100)
         return js
     
+
+    def mode_selector(self, js):
+        if js[6] == 1:
+                print("mode_changed")
+                self.mode_ = 'trn'
+        if js[6] == 2:
+            self.mode_ = 'rcm'
+        return self.mode_
+
+    def movement_handler(self, js, mode):
+        if js[7] == 4:
+            movement_code = 130.0
+            movement_name = 'Z_T'
+            return movement_code, movement_name 
+        if js[7] == 8:
+            movement_code = -130.0
+            movement_name = 'Z_D'
+            return movement_code, movement_name 
+        if mode == 'trn':
+            # movement_code = 130.2
+            # movement_name = 'X_L'
+            # return movement_code, movement_name 
+            if js[0] == 0 and js[1] == 0:
+                #print("Mode >> TRS || Dir >> X_Left   ", end='\r')
+                movement_code = 130.2
+                movement_name = 'X_L'
+                return movement_code, movement_name 
+            if js[0] == 255 and js[1] == 3:
+                #print("Mode >> TRS || Dir >> X_right  ", end='\r')
+                movement_code = -130.2
+                movement_name = 'X_R'
+                return movement_code, movement_name 
+                
+            
+            if js[2] == 0 and js[3] == 0:
+                #print("Mode >> TRS || Dir >> Y_Top   ", end='\r')
+                movement_code = 130.1
+                movement_name = 'Y_U'
+                return movement_code, movement_name 
+
+            if js[2] == 255 and js[3] == 3 :
+                #print("Mode >> TRS || Dir >> Y_Down  ", end='\r')
+                movement_code = -130.1
+                movement_name = 'Y_D'
+                return movement_code, movement_name 
+
+            else: 
+                movement_code = 0.0
+                movement_name = 'stop'
+                return movement_code, movement_name 
+
+        if mode == 'rcm':
+            if js[0] == 0 and js[1] == 0:
+                movement_code = 132.0
+                movement_name = 'XZ_L'
+                return movement_code, movement_name 
+            if js[0] == 255 and js[1] == 3:
+                movement_code = -132.0
+                movement_name = 'XZ_R'
+                return movement_code, movement_name 
+            if js[2] == 0 and js[3] == 0:
+                movement_code = 132.1
+                movement_name = 'XY_T'
+                return movement_code, movement_name 
+            if js[2] == 255 and js[3] == 3:
+                movement_code = -132.1
+                movement_name = 'XY_D'
+                return movement_code, movement_name 
+            else: 
+                movement_code = 0.0
+                movement_name = 'stop'
+                return movement_code, movement_name 
+                    
     def joystick_reader(self):
         self.counter_ +=1 
-        command = RobotCommand()
-        print('Hi')
+        command = RobotJoystick()
+        ## signal array
         js = self.joystick_signal()
-        self.get_logger().error(f' {str(js)} -- {self.counter_}')
-        # self.usb_input_pub.publish
+        self.mode_ = self.mode_selector(js)
+        # TODO: make the speed dynamic
+        command.speed = 50
+        try:
+            command.mode , command.mode_name = self.movement_handler(js, self.mode_)
+            self.get_logger().info(f' {self.mode_} -- {command.axis}-{command.mode_name}-{js[7]}-{js[3]}')
+            self.usb_input_pub.publish(command)
+        except Exception as e:
+            self.get_logger().error(e)
+
+        self.usb_input_pub.publish(command)
 
 def main(args = None):
     rclpy.init(args=args)
@@ -78,24 +164,6 @@ def main(args = None):
 if __name__ == '__main__':
     main()
 '''
-axis = 0
-def decode(channel, data):
-    global is_z_limit
-    msg = RobotMessage.decode(data)
-    
-
-
-
-
-def joystick_mode():
-    number = dev.read(eaddr, 100)[6]
-    if mode == 1:
-        print("mode_changed")
-        if number == 0 :
-            mode = 1
-        else:
-            mode = 0
-        return mode
     
 def loading_func():
     print('Mode is changing, Please Wait!')
