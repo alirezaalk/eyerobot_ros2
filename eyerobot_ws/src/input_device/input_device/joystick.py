@@ -9,9 +9,14 @@ from turtle import position
 import lcm
 import math
 import time
+from RobotMessage import RobotMessage 
 import sys
 
 
+### setting up LCM
+lcm_rv = lcm.LCM()  #  receive status
+lcm_cm = lcm.LCM()  #  send command 
+message = RobotMessage()
 ## Setting up the target and encoders data
 target_A = [ 100000, 110000, 110000, 100000, 10000]
 

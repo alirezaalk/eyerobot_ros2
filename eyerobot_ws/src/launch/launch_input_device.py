@@ -13,6 +13,16 @@ def generate_launch_description():
             prefix=["sudo -E env \"PYTHONPATH=$PYTHONPATH\" \"LD_LIBRARY_PATH=$LD_LIBRARY_PATH\" \"PATH=$PATH\" \"USER=$USER\"  bash -c "],
             shell=True,
         ),
+        # Node(
+        #     package='input_device',
+        #     executable='input_robot_interface',
+        #     namespace="",
+        #     name='input_robot_interface',
+        #     # prefix = ["sudo"],
+        #     # Launch the node with root access (GPIO) in a shell
+        #     prefix=["sudo -E env \"PYTHONPATH=$PYTHONPATH\" \"LD_LIBRARY_PATH=$LD_LIBRARY_PATH\" \"PATH=$PATH\" \"USER=$USER\"  bash -c "],
+        #     shell=True,
+        # ),
         
     ])
 

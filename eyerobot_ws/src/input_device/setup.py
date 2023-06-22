@@ -21,7 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'input_device_node = input_device.input_device_node:main',
-            
+            'input_robot_interface = input_device.input_robot_interface:main'
         ],
     },
 )

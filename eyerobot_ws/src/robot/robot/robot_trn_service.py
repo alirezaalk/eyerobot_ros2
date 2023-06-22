@@ -17,7 +17,7 @@ import sys
 import robot.excutor as re
 class RobotSLAM(Node):
     def __init__(self):#  , target, axis, speed= 25, stop_limit = 100):#, target):
-        super().__init__("robot_slam")
+        super().__init__("robot_slam_service")
         self.get_logger().info("robot_slam node is initilized!")
         self.counter = 0 
         self.pose = RobotPose()

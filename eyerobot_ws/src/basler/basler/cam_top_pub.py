@@ -1,5 +1,3 @@
-
-
 import rclpy
 import numpy as np
 import cv2
@@ -12,7 +10,7 @@ class CamTopPub(Node):
         super().__init__("cam_top_pub")
         self.get_logger().info("Camera Top View Node has started!")
         self.cam_top_topic_ = "/cam_top"
-        self.frame_per_second_ = 20
+        self.frame_per_second_ = 30
         self.cam_top_pub_ = self.create_publisher(Image, self.cam_top_topic_, 10)
         self.image_ = None
         self.bridge_ = CvBridge()

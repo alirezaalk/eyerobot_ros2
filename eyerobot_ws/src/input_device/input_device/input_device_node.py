@@ -40,7 +40,7 @@ class InputDeviceNode(Node):
             raise ValueError('device not found')
             sys.exit(1)
         else:
-            print("Dev`ice Found")
+            print("Deveice Found")
 
         if dev.is_kernel_driver_active(i): ## if currently sth is listening to device we detach it.  
             try:
@@ -76,33 +76,25 @@ class InputDeviceNode(Node):
             movement_name = 'Z_D'
             return movement_code, movement_name 
         if mode == 'trn':
-            # movement_code = 130.2
-            # movement_name = 'X_L'
-            # return movement_code, movement_name 
             if js[0] == 0 and js[1] == 0:
-                #print("Mode >> TRS || Dir >> X_Left   ", end='\r')
                 movement_code = 130.2
                 movement_name = 'X_L'
                 return movement_code, movement_name 
             if js[0] == 255 and js[1] == 3:
-                #print("Mode >> TRS || Dir >> X_right  ", end='\r')
                 movement_code = -130.2
                 movement_name = 'X_R'
                 return movement_code, movement_name 
                 
             
             if js[2] == 0 and js[3] == 0:
-                #print("Mode >> TRS || Dir >> Y_Top   ", end='\r')
                 movement_code = 130.1
                 movement_name = 'Y_U'
                 return movement_code, movement_name 
 
             if js[2] == 255 and js[3] == 3 :
-                #print("Mode >> TRS || Dir >> Y_Down  ", end='\r')
                 movement_code = -130.1
                 movement_name = 'Y_D'
                 return movement_code, movement_name 
-
             else: 
                 movement_code = 0.0
                 movement_name = 'stop'
