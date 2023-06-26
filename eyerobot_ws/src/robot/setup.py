@@ -27,9 +27,9 @@ setup(
             'robot_slam_rcm = robot.robot_slam_rcm : main',
             'robot_service = robot.robot_services:main',
             'robot_excutor = robot.robot_excutor: main',
-            'robot_trn_service = robot.robot_trn_service:main',
-            'composed_ui_cam = robot.composed_ui_cam:main'
-
+            'robot_slam_service = robot.robot_slam_service:main',
+            'composed_slam_enc_driv_cam = robot.composed_slam_enc_driv_cam:main',
+            'robot_mov_api = robot.robot_mov_api: main',
         ],
     },
 )

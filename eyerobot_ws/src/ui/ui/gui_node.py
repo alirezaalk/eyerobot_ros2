@@ -25,10 +25,11 @@ from robot_interface.msg import RobotCommand
 from robot_interface.msg import RobotFeedback
 from std_msgs.msg import UInt16
 import robot.robot_excutor as rcomp
+from PyQt5.QtGui import QMouseEvent
 # from robot_interface.srv import RobotCom
 ### Robot init import
-import robot.excutor as re
-import robot.robot_slam_trn 
+#import robot.excutor as re
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -46,7 +47,7 @@ class MainWindow(QMainWindow):
         # Build splash screen and UI
         #splash_screen = SplashScreen()
         self.ui = uic.loadUi(UiConfig().UI_DIR + 'main_ui.ui')
-        self.ui.log_console.append("Medical Autonomy and Precision Surgery Laboratory - Robot Control UI\n")
+        self.ui.log_console.append("Medical Autonomy and Precision Surgery Laboratory\n")
         # add windows icon to the the app
         # self.setWindowIcon(QIcon(self.icon_path))
         
@@ -100,6 +101,7 @@ class MainWindow(QMainWindow):
         self.deg_yz = 2.0
         ## TODO if case adding the Rosservice 
         ### Service 
+        
         # self.robot_init_client = self.node.create_client(
         #         RobotCom, 
         #         "robot_command")
@@ -110,10 +112,17 @@ class MainWindow(QMainWindow):
 
         ## TODO add arrow button
         ## Arrow buttons
-        # self.ui.control_up.mousePressEvent = self.emit_signal_up
-        # self.ui.control_down.mousePressEvent = self.emit_signal_down
-        # self.ui.control_left.mousePressEvent = self.emit_signal_left
-        # self.ui.control_right.mousePressEvent = self.emit_signal_right
+        self.input_signal_pub = self.node.create_publisher(
+            RobotCommand, 
+            '/movemnet_api',
+            10)
+        
+        self.ui.up_but.clicked.connect(self.emit_signal_up)
+        self.ui.down_but.clicked.connect(self.emit_signal_down)
+        self.ui.control_up.mousePressEvent = self.emit_signal_y_top
+        self.ui.control_down.mousePressEvent = self.emit_signal_y_down
+        self.ui.control_left.mousePressEvent = self.emit_signal_x_left
+        self.ui.control_right.mousePressEvent = self.emit_signal_x_right
         
         ## Set the ui elements in start mode
         self.ui.progressBar.setValue(0)
@@ -145,6 +154,85 @@ class MainWindow(QMainWindow):
             cv2.waitKey(1)
 
     #################################### Main Page ###########################
+    def emit_signal_up(self):
+        
+        cmd = RobotCommand()
+        self.ui.log_console.clear()
+        self.ui.log_console.append("Z-Up")
+        cmd.name = 'w_target'
+        cmd.speed = 100
+        cmd.command = 130.0
+        self.input_signal_pub.publish(cmd)
+    
+    def emit_signal_down(self):
+        cmd = RobotCommand()
+        self.ui.log_console.clear()
+        self.ui.log_console.append("Z-Down")
+        cmd.name = 'w_target'
+        cmd.speed = 100
+        cmd.command = -130.0
+        self.input_signal_pub.publish(cmd)
+
+    def emit_signal_y_top(self,  mouse_event: QMouseEvent):
+        cmd = RobotCommand()
+        self.ui.log_console.clear()
+        cmd.name = 'w_target'
+        cmd.speed = 100
+        
+        if self.ui.checkBox_rcm_trn.isChecked() == True:
+            self.ui.log_console.append("XY-Up")
+            cmd.command = 132.0
+        if self.ui.checkBox_rcm_trn.isChecked() == False:
+            cmd.command = 130.1
+            self.ui.log_console.append("Y-Up")
+        self.input_signal_pub.publish(cmd)
+    
+    def emit_signal_y_down(self,  mouse_event: QMouseEvent):
+        cmd = RobotCommand()
+        self.ui.log_console.clear()
+        cmd.name = 'w_target'
+        cmd.speed = 100
+        
+        if self.ui.checkBox_rcm_trn.isChecked() == True:
+            self.ui.log_console.append("XY-Down")
+            cmd.command = -132.0
+        if self.ui.checkBox_rcm_trn.isChecked() == False:
+            cmd.command = -130.1
+            self.ui.log_console.append("Y-Down")
+        self.input_signal_pub.publish(cmd)
+
+    def emit_signal_x_left(self,  mouse_event: QMouseEvent):
+        cmd = RobotCommand()
+        self.ui.log_console.clear()
+        cmd.name = 'w_target'
+        cmd.speed = 100
+        
+        if self.ui.checkBox_rcm_trn.isChecked() == True:
+            self.ui.log_console.append("XZ-Left")
+            cmd.command = 132.1
+        if self.ui.checkBox_rcm_trn.isChecked() == False:
+            cmd.command = 130.2
+            self.ui.log_console.append("X-Left")
+        self.input_signal_pub.publish(cmd)
+    
+    def emit_signal_x_right(self,  mouse_event: QMouseEvent):
+        cmd = RobotCommand()
+        self.ui.log_console.clear()
+        
+        cmd.name = 'w_target'
+        cmd.speed = 100
+        
+        if self.ui.checkBox_rcm_trn.isChecked() == True:
+            self.ui.log_console.append("XZ-Right")
+            cmd.command = -132.1
+        if self.ui.checkBox_rcm_trn.isChecked() == False:
+            cmd.command = -130.2
+            self.ui.log_console.append("X-right")
+        self.input_signal_pub.publish(cmd)
+
+   
+
+        
     def robot_init_cmd(self):
         self.ui.log_console.append("init is pressed")
         self.init_timer = self.node.create_timer(0.01, self.slam_cmd_init)
@@ -387,7 +475,6 @@ class MainWindow(QMainWindow):
             self.cmd_gui_pub.publish(cmd)
             
 
-
     def target_calculator(self, robot_pose, xz_deg= 0, yz_deg= 0):
         xz_deg = xz_deg/-180*np.pi
         yz_deg = yz_deg/-180*np.pi
@@ -427,17 +514,42 @@ class MainWindow(QMainWindow):
     #     self.req.coordinate.orientation.z = 0.0
     #     self.future = self.robot_init_client.call_async(self.req)
     #     print(self.future)
-        
     
+    #### Calculate the pose based on the encoder
+    def pose_calculator(self, pos_array, 
+                        link1 = 29.50, link2= 47.80, offset1 = 4.75, 
+                        offset2 = 19.00, ltool = 62.25, d1 = 101.00, 
+                        d3 = 63.01, d5 = 85.25
+                        ):
+        tip_pose = [0,0,0]
+        d5_pos = (pos_array[0] - 100000) / 10000 + 85.25
+        d3_pos = -(pos_array[2] - 100000)/10000 + 63.01
+        d1_pos = -(pos_array[4] - 100000)/10000 +101    
+        t2 = np.arctan((pos_array[3] - pos_array[4])/(10000*23)) 
+        t4 = np.arctan(-(pos_array[1] - pos_array[2])/(10000*23)) 
+        trans_pose = [d5_pos, d3_pos, d1_pos]
+        rot_pose   = [t2, t4]
+        self.tip_pose = [
+            -1 * d5_pos * np.cos(t2) + link1 * np.sin(t2) - link2 * np.sin(t4) * np.cos(t2) - offset1 * np.cos(t2) - offset2 * np.sin(t2),
+            d3_pos - d5_pos * np.sin(t4) + link2 * np.cos(t4),
+            d1_pos + d5_pos * np.sin(t2) * np.cos(t4) + link1 * np.cos(t2) + link2 * np.sin(t2) * np.sin(t4) + offset1 * np.sin(t2) - offset2 * np.cos(t2) 
+        ]
+        return self.tip_pose
+    
+
+
     def clear_encoder_log(self):
         self.ui.log_encoder.clear()
 
     def encoder_gui(self, pose:RobotPose):
+        
         self.ui.log_encoder.clear()
         self.robot_pose = [pose.en0, pose.en1, pose.en2, pose.en3, pose.en4]
         speed = pose.speed
         name = pose.name
-        self.ui.log_encoder.append(f"Encoders:{str(self.robot_pose)}")
+        tip_pose = self.pose_calculator(self.robot_pose)
+        tip_pose = [round(i, 2) for i in tip_pose]
+        self.ui.log_encoder.append(f"Encoders:{str(self.robot_pose)} \nTip_Pose : {str(tip_pose)}")
     
     def monitor_encoders(self):
         print("monitor data started")
@@ -448,9 +560,7 @@ class MainWindow(QMainWindow):
             1)
 
     def log_encoder(self, pose:RobotPose):
-       
         self.robot_pose = pose.mode
-        
         print(self.robot_pose)
         self.ui.log_console.clear()
         self.ui.log_console.append(f"{str(self.robot_pose)}")  
@@ -474,7 +584,10 @@ class MainWindow(QMainWindow):
             self.cam_top_topic_name,
             self.update_pixmap_cam_top,
             1 )
-        rclpy.spin(self.node)
+        try:
+            rclpy.spin(self.node)
+        except KeyboardInterrupt:
+            pass
     #################################### Frame Page ########################333
     # Start subscribing the d455
     def start_camera_subscription(self, state):
@@ -574,18 +687,4 @@ def main():
         pass
         
 if __name__ == "__main__":
-    # app = QtWidgets.QApplication(sys.argv)
-    # #app = QApplication(sys.argv)
-    # win = MainWindow()
-    
-    # splash_screen = SplashScreen()
-    # splash_screen.show()
-    # app.processEvents()
-    # # Display splash screen while UI loads
-    # splash_screen.finish(win.ui)
-    # win.show()
-    # # app.exec()
-    
-    
-    # sys.exit(app.exec_())
     main()

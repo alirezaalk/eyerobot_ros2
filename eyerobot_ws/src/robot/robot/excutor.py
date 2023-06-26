@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 import robot.robot_slam_rcm as rcm
-import robot.robot_slam_trn as tran
+
 
 import rclpy
 import numpy as np
@@ -10,9 +10,9 @@ from robot_interface.srv import RobotCom
 import robot.excutor as re
 import threading
 import rclpy
-from robot.robot_slam_trn import RobotSLAMTrn
+
 from rclpy.executors import MultiThreadedExecutor
-import robot.robot_slam_trn as tr
+
 
 # executor.shutdown()
 def robot_init(default_init_pose=[100000,100000,100000], speed=30, order_axis = ['y', 'z', 'x']):

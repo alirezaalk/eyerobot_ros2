@@ -86,7 +86,7 @@ class RobotSLAM(Node):
                 rclpy.logging.get_logger(f"move backward_{axis}").info(str(robot_pose))
                 return feedback
             
-       
+
         if axis == 130.1:
             if abs(robot_pose[1] - target) < brake and abs(robot_pose[2] - target) < brake:
                 feedback = [130.1, 100.0, 0.0]
@@ -199,7 +199,6 @@ class RobotSLAM(Node):
                     return feedback
                 
             ## XZ / act 3,4 
-            
             if axis == 132.1:
                 diff = [abs(robot_pose[0] - target[0]), abs(robot_pose[3] - target[3]), abs(robot_pose[4] - target[4])]
                 if (abs(robot_pose[0] - target[0]) < brake ) or  (abs(robot_pose[3] - target[3]) < brake or abs(robot_pose[4] - target[4]) < brake):

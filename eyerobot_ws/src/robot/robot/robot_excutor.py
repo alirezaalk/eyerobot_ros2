@@ -1,7 +1,5 @@
 import rclpy
 
-from robot.robot_slam_trn import RobotSLAMTrn
-from robot.robot_slam_rcm import RobotSLAMRcm
 from robot.robot_encoder import RobotEncoder
 from robot.robot_driver import RobotDriver
 from rclpy.executors import SingleThreadedExecutor
